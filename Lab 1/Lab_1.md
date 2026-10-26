@@ -640,7 +640,7 @@ In this task, you will create a script that repeatedly checks database availabil
     EOF
     ```
 
-    ![Screenshot](images/image-71.png)
+    ![Screenshot](media/image-71.png)
 
 2. Review the script:
 
@@ -656,7 +656,7 @@ In this task, you will create a script that repeatedly checks database availabil
     chmod +x watch.sh
     ```
 
-    ![Screenshot](images/image-72.png)
+    ![Screenshot](media/image-72.png)
 
 4. Verify that the file exists:
 
@@ -664,7 +664,7 @@ In this task, you will create a script that repeatedly checks database availabil
     ls -l watch.sh
     ```
 
-    ![Screenshot](images/image-73.png)
+    ![Screenshot](media/image-73.png)
 
 5. Run the following command:
 
@@ -680,25 +680,25 @@ In this task, you will establish a baseline before initiating the failover.
 
 2. In the second session, repeat the environment-variable setup from Task 1, using the same endpoint hostnames, username, database name, and password.
 
-    ![Screenshot](images/image-74.png)
+    ![Screenshot](media/image-74.png)
 
 3. Create `watch.sh` in the second session by repeating Task 2 and make it executable.
 
-    ![Screenshot](images/image-75.png)
+    ![Screenshot](media/image-75.png)
 
-    ![Screenshot](images/image-76.png)
+    ![Screenshot](media/image-76.png)
 
 4. In the first Cloud Shell session, start the PLC gateway monitor:
 
     +++./watch.sh rw+++
 
-    ![Screenshot](images/image-77.png)
+    ![Screenshot](media/image-77.png)
 
 5. In the second Cloud Shell session, start the OEE dashboard monitor:
 
     +++./watch.sh ro+++
 
-    ![Screenshot](images/image-78.png)
+    ![Screenshot](media/image-78.png)
 
 6. Observe both outputs for at least 10 seconds.
 
@@ -710,11 +710,11 @@ In this task, you will establish a baseline before initiating the failover.
 
     Output from the PLC gateway monitor:
 
-    ![Screenshot](images/image-79.png)
+    ![Screenshot](media/image-79.png)
 
     Output from the OEE dashboard monitor:
 
-    ![Screenshot](images/image-80.png)
+    ![Screenshot](media/image-80.png)
 
 7. Leave both monitors running.
 
@@ -728,19 +728,19 @@ In this task, you will simulate an unplanned database interruption while the PLC
 
 2. Under **Settings**, select **High availability**, then select **Manage replicas and failover**.
 
-    ![Screenshot](images/image-81.png)
+    ![Screenshot](media/image-81.png)
 
 3. Review the current replica roles. Identify the replica assigned the **ReadWrite** role and the replica assigned the **Read** role.
 
-    ![Screenshot](images/image-82.png)
+    ![Screenshot](media/image-82.png)
 
 4. Select **Forced failover**.
 
-    ![Screenshot](images/image-83.png)
+    ![Screenshot](media/image-83.png)
 
 5. Select **Fail over.**
 
-    ![Screenshot](images/image-84.png)
+    ![Screenshot](media/image-84.png)
 
 6. While the failover is in progress, observe both Cloud Shell sessions. Do not stop the monitoring scripts.
 
@@ -757,13 +757,13 @@ In this task, you will simulate an unplanned database interruption while the PLC
 
     The write monitor may report connection failures during failover and should resume successful inserts when the read/write endpoint becomes available again.
 
-    ![Screenshot](images/image-85.png)
+    ![Screenshot](media/image-85.png)
 
     **Window 2 output — OEE dashboard monitor (ro):**
 
     The reader endpoint's reported replica status may change after failover. A true result indicates that the current connection is to a standby; a false result indicates that it is connected to a primary.
 
-    ![Screenshot](images/image-86.png)
+    ![Screenshot](media/image-86.png)
 
 **Note:** The exact interruption duration and number of failed checks depend on the environment. Do not assume that either endpoint will remain continuously available.
 
@@ -779,7 +779,7 @@ In this task, you will verify that the database remains accessible after failove
     psql "host=$PGHOST_RW port=$PGPORT dbname=$PGDATABASE user=$PGUSER sslmode=require connect_timeout=10"
     ```
 
-    ![Screenshot](images/image-87.png)
+    ![Screenshot](media/image-87.png)
 
 3. Run the following query to count the committed heartbeat records:
 
@@ -791,11 +791,11 @@ In this task, you will verify that the database remains accessible after failove
     AND plc_id = 'PLC-WATCH';
     ```
 
-    ![Screenshot](images/image-88.png)
+    ![Screenshot](media/image-88.png)
 
 4. Confirm that the query completes successfully and returns a count.
 
-    ![Screenshot](images/image-89.png)
+    ![Screenshot](media/image-89.png)
 
     **Note:** The heartbeat count can include records from previous monitoring runs that used the same PLC-WATCH identifier. Therefore, use the count to confirm that heartbeat records exist, not as an exact measure of the writes completed during this failover test.
 
@@ -807,11 +807,11 @@ In this task, you will verify that the database remains accessible after failove
     pg_is_in_recovery() AS is_replica;
     ```
 
-    ![Screenshot](images/image-90.png)
+    ![Screenshot](media/image-90.png)
 
     **Expected result:** database_name is schedpro and is_replica is false.
 
-    ![Screenshot](images/image-91.png)
+    ![Screenshot](media/image-91.png)
 
 6. Exit the PostgreSQL session:
 
@@ -819,7 +819,7 @@ In this task, you will verify that the database remains accessible after failove
     \q
     ```
 
-    ![Screenshot](images/image-92.png)
+    ![Screenshot](media/image-92.png)
 
 7. If the read-only endpoint is accessible, connect to it using the following command:
 
@@ -827,7 +827,7 @@ In this task, you will verify that the database remains accessible after failove
     psql "host=$PGHOST_RO port=$PGPORT dbname=$PGDATABASE user=$PGUSER sslmode=require connect_timeout=10"
     ```
 
-    ![Screenshot](images/image-93.png)
+    ![Screenshot](media/image-93.png)
 
 8. Run the same recovery-status query. Confirm that pg_is_in_recovery() returns true.
 
@@ -837,17 +837,17 @@ In this task, you will verify that the database remains accessible after failove
     pg_is_in_recovery() AS is_replica;
     ```
 
-    ![Screenshot](images/image-94.png)
+    ![Screenshot](media/image-94.png)
 
     Observe the output. If the reader endpoint connects to a standby, is_replica should be true. If it returns false, the endpoint is currently routing the connection to a primary; record the observed result rather than assuming the endpoint is unavailable.
 
-    ![Screenshot](images/image-95.png)
+    ![Screenshot](media/image-95.png)
 
 9. Exit the PostgreSQL session:
 
     +++\q+++
 
-    ![Screenshot](images/image-96.png)
+    ![Screenshot](media/image-96.png)
 
 ## Exercise 5: Clean up resources
 
@@ -855,17 +855,17 @@ The cluster has multiple replicas and is billed while it runs. When your session
 
 1. In the Azure portal, search for **Resource groups**
 
-2. Select ResourceGroup1 and select the horizon db cluster.
+2. Select ResourceGroup1 and select the horizondb cluster.
 
-    ![Screenshot](images/image-97.png)
+    ![Screenshot](media/image-97.png)
 
 3. Select the **three dots(…)->Delete.**
 
-    ![Screenshot](images/image-98.png)
+    ![Screenshot](media/image-98.png)
 
 4. Enter +++delete+++ and then select Delete to delete the HorizonDB cluster.
 
-    ![Screenshot](images/image-99.png)
+    ![Screenshot](media/image-99.png)
 
 ## Summary
 
