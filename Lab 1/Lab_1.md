@@ -43,7 +43,7 @@ In this exercise, you provision an Azure HorizonDB cluster for SchedPro's Manufa
 
     TAP Token - +++@lab.CloudPortalCredential(User1).AccessToken+++
 
-    ![Screenshot](images/image-01.png)
+    ![Screenshot](media/image-01.png)
 
     ![Screenshot](images/image-02.png)
 
