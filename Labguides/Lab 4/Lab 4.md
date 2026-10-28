@@ -1,31 +1,5 @@
 # Lab 4 — Build a GraphRAG Legal Research Agent on Azure HorizonDB
 
-Course: Building AI-Native Applications on Azure with HorizonDB | Day 2, Lab 1 of 3 | Scenario: Calder & Voss LLP (legal research)
-
-## Lab information
-
-| Item | Details |
-|---|---|
-| Duration | 60 minutes of learner activity. Environment preparation (about 45 minutes) is done by the instructor before the session. |
-| Level | Intermediate |
-| Platform | Azure HorizonDB (Preview), PostgreSQL 17 |
-| Tools | Azure portal, Visual Studio Code with the PostgreSQL extension, Python 3.10 or later |
-| Key capabilities | pgvector, Apache AGE, azure_ai managed models, a tool-calling agent with database memory |
-| Use case | Legal research with GraphRAG, from the Azure HorizonDB AI use cases and samples |
-| Deliverable | A research agent that finds relevant cases by meaning, follows the citation network to related authority, remembers the conversation, and answers only from retrieved documents |
-
-Day 2 uses one environment for Labs 5, 6 and 7. Run the labs in order, and do not delete the cluster until the end of Lab 7.
-
-| Section | Time |
-|---|---|
-| Exercise 0: Environment setup (instructor) | Before the session |
-| Exercise 1: Load the research library and build the citation graph | 15 minutes |
-| Exercise 2: Retrieve with vectors, then expand with the graph | 15 minutes |
-| Exercise 3: Build the legal research agent | 20 minutes |
-| Validate your results | 5 minutes |
-
-Note: All cases, firms and clients in this lab are fictional and are used only for training. Nothing here is legal advice.
-
 ## Lab scenario
 
 Calder & Voss LLP is a law firm that advises employers. Its associates research questions such as Can a court narrow an overbroad non-compete instead of striking it down? The answer is rarely in one document. It sits in a chain of court opinions that cite each other, in firm research memos that summarize them, and in matter notes that apply them to a client.
