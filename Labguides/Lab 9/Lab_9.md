@@ -51,7 +51,7 @@ In this exercise, you provision an Azure HorizonDB cluster for SchedPro's Manufa
 
 3. In the search box at the top of the page, enter +++**Azure HorizonDB**+++. Under **Services**, select **Azure HorizonDB**.
 
-    ![Screenshot](images/image-04.png)
+    ![Screenshot](media/image-04.png)
 
 4. Select **Create**.
 
