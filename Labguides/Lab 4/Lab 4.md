@@ -686,7 +686,7 @@ SELECT * FROM legal.graphrag_retrieve('Can a court narrow an overbroad non-compe
 
 > **Checkpoint:** You have a SQL-only GraphRAG retrieval flow. Next, an agent chooses these steps for itself.
 
-## Exercise 3: Build the legal research agent (20 minutes)
+## Exercise 3: Build the legal research agent 
 
 The agent has four tools. The model picks one at a time by replying with a small JSON message, the Python program runs the tool against HorizonDB, and the result goes back to the model. The model calls go through legal.llm from Exercise 1, which uses the bring-your-own chat model you registered. The Python program never holds a model key. It only needs the database connection.
 
@@ -845,7 +845,7 @@ The supplied agent.py file contains the complete implementation of the Legal Res
 
    ![](./media/image92.png)
 
-### Task 4: Run the agent
+### Task 4: Test the agent
 
 Run +++python agent.py+++ and ask these questions one at a time. Watch the [step] lines, because they show which tool the model chose.
 
