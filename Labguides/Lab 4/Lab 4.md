@@ -729,6 +729,7 @@ User questions, agent answers and every tool result are stored. This gives you a
 3. Execute the following commands one by one in the terminal:
 
    ```powershell
+   cd "C:\Lab Files"
    python3 -m venv .venv
    .\.venv\Scripts\Activate.ps1
    python -m pip install --upgrade pip
