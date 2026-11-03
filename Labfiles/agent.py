@@ -36,7 +36,7 @@ SESSION_ID = os.getenv(
 
 
 
-MAX_STEPS = 5
+MAX_STEPS = 10
 
 DEBUG = False
 
