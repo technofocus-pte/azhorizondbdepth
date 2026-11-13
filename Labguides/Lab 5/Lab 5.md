@@ -44,7 +44,7 @@ In this exercise, you confirm that the Lab 4 data and both extensions are in pla
 
    Note: If a check fails, complete the missing part of Lab 4 first.
 
-   ![Screenshot 1](media/image1.png)
+   ![Screenshot 1](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image1.png)
 
 ## Exercise 1: Build a realistic benchmark dataset
 
@@ -69,7 +69,7 @@ The function returns a copy of a vector with a small random change added to ever
    $$;
    ```
 
-   ![Screenshot 2](media/image2.png)
+   ![Screenshot 2](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image2.png)
 
 ### Task 2: Generate 30,000 passages
 
@@ -95,7 +95,7 @@ Each document becomes 2,500 slightly different passages. Unlike copies of the sa
 
    Note: Wait for the insert to finish. It takes one to three minutes on 2 to 4 vCores
 
-   ![Screenshot 3](media/image3.png)
+   ![Screenshot 3](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image3.png)
 
 2. Count the passages and check the table size.
 
@@ -106,7 +106,7 @@ Each document becomes 2,500 slightly different passages. Unlike copies of the sa
 
    Verify that the result shows 30,000 passages and table size around 239MB.
 
-   ![Screenshot 4](media/image4.png)
+   ![Screenshot 4](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image4.png)
 
 ### Task 3: Create test queries and exact answers
 
@@ -132,7 +132,7 @@ You create 24 query vectors (two per document, with more variation than the stor
    ) AS t;
    ```
 
-   ![Screenshot 5](media/image5.png)
+   ![Screenshot 5](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image5.png)
 
 2. Check the row counts.
 
@@ -143,7 +143,7 @@ You create 24 query vectors (two per document, with more variation than the stor
 
    Verify that you have 24 queries and 240 truth rows.
 
-   ![Screenshot 6](media/image6.png)
+   ![Screenshot 6](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image6.png)
 
     Verify that you have 24 queries and 240 truth rows.
 
@@ -165,7 +165,7 @@ The baseline shows how an exact search runs today. You record three values from 
    LIMIT 10;
    ```
 
-   ![Screenshot 7](media/image7.png)
+   ![Screenshot 7](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image7.png)
 
 ### Task 2: Create the DiskANN index
 
@@ -189,7 +189,7 @@ You build the index with the default graph settings. The two options control the
    | max_neighbors | Maximum edges per node (default 32) | Can improve recall, uses more space |
    | l_value_ib | Search list size while building (default 100) | Better index quality, slower build |
 
-   ![Screenshot 8](media/image8.png)
+   ![Screenshot 8](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image8.png)
 
 ### Task 3: Compare the plan
 
@@ -207,7 +207,7 @@ You run the same query again to see whether the planner now uses the index.
 
    Check the scan type. The plan may use an Index Scan with idx_bench_diskann when the planner estimates that it is beneficial. On a 30,000-row table, the planner may still choose a sequential scan, and the indexed query is not guaranteed to be faster.
 
-   ![Screenshot 9](media/image9.png)
+   ![Screenshot 9](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image9.png)
 
 2. If you still see a Seq Scan, the planner decided it was cheaper. Check that ANALYZE ran, then test the index explicitly inside a transaction.
 
@@ -222,7 +222,7 @@ You run the same query again to see whether the planner now uses the index.
    COMMIT;
    ```
 
-   ![Screenshot 10](media/image10.png)
+   ![Screenshot 10](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image10.png)
 
 ### Task 4: Check the size cost
 
@@ -237,7 +237,7 @@ An index uses additional storage. You compare the table size with the index size
 
    Record both sizes. An index is a trade-off: it consumes additional storage and adds write/build overhead. Query speed is workload-dependent; measure it rather than assuming the index is always faster.
 
-   ![Screenshot 11](media/image11.png)
+   ![Screenshot 11](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image11.png)
 
 
 ## Exercise 3: Tune the recall and latency trade-off
@@ -250,9 +250,9 @@ The script runs the tuning sweep and the load test. You create it once and use i
 
 1. Select File->New file->Python File.
 
-   ![Screenshot 12](media/image12.png)
+   ![Screenshot 12](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image12.png)
 
-   ![Screenshot 13](media/image13.png)
+   ![Screenshot 13](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image13.png)
 
 2. Create a file named bench.py with the following content.
 
@@ -351,15 +351,15 @@ The script runs the tuning sweep and the load test. You create it once and use i
            load(args.mode, args.l_value, args.threads, args.seconds)
    ```
 
-   ![Screenshot 14](media/image14.png)
+   ![Screenshot 14](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image14.png)
 
 3. Save the file with name:+++bench.py+++. These file should be save in the same folder where you keep the agent from Lab 4-: C:\\Lab Files,
 
-   ![Screenshot 15](media/image15.png)
+   ![Screenshot 15](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image15.png)
 
 4. Select three dots(…)->Terminal->New terminal and run the following command to activate with the virtual environment:
 
-   ![Screenshot 16](media/image16.png)
+   ![Screenshot 16](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image16.png)
 
    ```powershell
    cd “C:\Lab Files”
@@ -367,9 +367,9 @@ The script runs the tuning sweep and the load test. You create it once and use i
    $env:HORIZONDB_DSN = 'host=<CLUSTER_ENDPOINT> port=5432 dbname=legalai_lab user=lawadmin password=Pass@1234 sslmode=require'
    ```
 
-   ![Screenshot 17](media/image17.png)
+   ![Screenshot 17](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image17.png)
 
-   ![Screenshot 18](media/image18.png)
+   ![Screenshot 18](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image18.png)
 
 ### Task 2: Run the tuning sweep
 
@@ -381,11 +381,11 @@ The script runs the 24 test queries at each l_value_is setting and compares the 
    python bench.py tune
    ```
 
-   ![Screenshot 19](media/image19.png)
+   ![Screenshot 19](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image19.png)
 
    Expected pattern: larger l_value_is values generally allow a broader candidate search and may improve recall, often at the cost of additional query time. The relationship is workload- and plan-dependent; the values may not change monotonically, and this synthetic dataset may produce 100% recall at every setting. Record what you observe.
 
-   ![Screenshot 20](media/image20.png)
+   ![Screenshot 20](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image20.png)
 
 ### Task 4: Change the index build settings
 
@@ -402,15 +402,15 @@ You build a second index with a larger graph and repeat the sweep. Drop the old 
    WITH (max_neighbors = 64, l_value_ib = 200);
    ```
 
-   ![Screenshot 21](media/image21.png)
+   ![Screenshot 21](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image21.png)
 
 2. Open Terminal and run +++python bench.py tune+++ again.
 
-   ![Screenshot 22](media/image22.png)
+   ![Screenshot 22](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image22.png)
 
 3. Compare recall, latency and size with the first index.
 
-   ![Screenshot 23](media/image23.png)
+   ![Screenshot 23](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image23.png)
 
 
 ## Exercise 4: Load test and filtered search
@@ -427,11 +427,11 @@ This run disables the index and measures exact search with 1 and 4 simultaneous 
    python bench.py load --mode exact --threads 1 4
    ```
 
-   ![Screenshot 24](media/image24.png)
+   ![Screenshot 24](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image24.png)
 
 2. Review the results for each client count. Compare the QPS(queries per second) and p95 latency for 1 and 4 simultaneous clients to see how increasing concurrent requests affects exact-search throughput and response time.
 
-   ![Screenshot 25](media/image25.png)
+   ![Screenshot 25](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image25.png)
 
 ### Task 2: Indexed search under concurrent load
 
@@ -443,11 +443,11 @@ You repeat the test with the index, using the l_value_is you chose in Exercise 3
    python bench.py load --mode ann --l-value 100 --threads 1 4 8
    ```
 
-   ![Screenshot 26](media/image26.png)
+   ![Screenshot 26](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image26.png)
 
 2. Compare QPS and p95 latency for each mode and concurrency level. Indexed search may improve throughput, but the size of the improvement depends on the compute tier, cache state, planner choice, and workload. Do not treat a particular speed-up as guaranteed.
 
-   ![Screenshot 27](media/image27.png)
+   ![Screenshot 27](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image27.png)
 
 ### Task 3: Filtered vector search with DiskANN
 
@@ -463,11 +463,11 @@ Real applications combine vector similarity with metadata filters such as docume
    SHOW diskann.l_value_is;
    ```
 
-   ![Screenshot 28](media/image28.png)
+   ![Screenshot 28](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image28.png)
 
-   ![Screenshot 29](media/image29.png)
+   ![Screenshot 29](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image29.png)
 
-   ![Screenshot 30](media/image30.png)
+   ![Screenshot 30](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image30.png)
 
 2. If these settings are available, enable and configure the filtering hook for this test.
 
@@ -479,7 +479,7 @@ Real applications combine vector similarity with metadata filters such as docume
    SET diskann.l_value_is = 100;
    ```
 
-   ![Screenshot 31](media/image31.png)
+   ![Screenshot 31](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image31.png)
 
 3. Run a filtered nearest-neighbor query for firm memos. Query 1 is associated with a court opinion, so the metadata predicate asks DiskANN to find nearby passages that belong to documents of type MEMO.
 
@@ -496,7 +496,7 @@ Real applications combine vector similarity with metadata filters such as docume
    LIMIT 50;
    ```
 
-   ![Screenshot 32](media/image32.png)
+   ![Screenshot 32](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image32.png)
 
 4. Record the number of rows returned and the execution time.
 
@@ -517,7 +517,7 @@ Real applications combine vector similarity with metadata filters such as docume
 
    Expected result: the query returns up to 50 matching memo passages when enough qualifying rows are available. The actual plan, row count, and latency depend on the installed preview build and its filtering configuration. The key validation is that the metadata predicate is applied and that the returned rows satisfy doc_type = 'MEMO'.
 
-   ![Screenshot 33](media/image33.png)
+   ![Screenshot 33](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image33.png)
 
 ### Task 4: Reset the session settings
 
@@ -533,7 +533,7 @@ You return the session settings to their defaults so they do not affect later wo
    RESET diskann.filtering_beta;
    ```
 
-   ![Screenshot 34](media/image34.png)
+   ![Screenshot 34](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%205/media/image34.png)
 
 **Checkpoint:** You compared exact and indexed search under load, and you saw how a filter can starve an approximate search.
 
