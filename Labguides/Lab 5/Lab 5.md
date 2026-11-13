@@ -1,4 +1,4 @@
-# Lab 5 — Optimize Vector Search at Scale with DiskANN on Azure HorizonDB
+# Lab 5: Optimize Vector Search at Scale with DiskANN on Azure HorizonDB
 
 ## Lab scenario
 
@@ -145,7 +145,7 @@ You create 24 query vectors (two per document, with more variation than the stor
 
    ![Screenshot 6](media/image6.png)
 
-**Checkpoint:** You have a 30,000-row table, 24 test queries, and the exact nearest neighbors for each.
+    Verify that you have 24 queries and 240 truth rows.
 
 ## Exercise 2: Baseline, DiskANN index and query plan
 
@@ -239,7 +239,6 @@ An index uses additional storage. You compare the table size with the index size
 
    ![Screenshot 11](media/image11.png)
 
-**Checkpoint:** You have a baseline time, an indexed time, and the size of the index.
 
 ## Exercise 3: Tune the recall and latency trade-off
 
@@ -413,7 +412,6 @@ You build a second index with a larger graph and repeat the sweep. Drop the old 
 
    ![Screenshot 23](media/image23.png)
 
-**Checkpoint:** You can state the recall and latency for each search list size, and you have chosen a setting based on a measured result.
 
 ## Exercise 4: Load test and filtered search
 

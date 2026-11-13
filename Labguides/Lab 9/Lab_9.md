@@ -1,6 +1,6 @@
 # Lab 9: Implement High Availability and Failover Recovery in Azure HorizonDB
 
-**Estimate Time: 60 minutes**
+### Estimate Time: 60 minutes
 
 ## Scenario
 
@@ -18,10 +18,9 @@ SchedPro also experiences performance issues during shift changes at 06:00, 14:0
 
 Anja Brandt, VP of Manufacturing IT, has approved an initial deployment of Azure HorizonDB for the MES databases at two German plants. As the platform engineer, you will provision the HorizonDB cluster, configure high availability and read scaling, deploy the database schema, run production monitoring queries, and test failover behavior. The results will help SchedPro evaluate whether HorizonDB meets its availability, data-access, and performance requirements before expanding the deployment to the remaining plants.
 
-## Objectives
+### Objectives
 
 By the end of this lab, you will be able to:
-
 - Deploy Azure HorizonDB with PostgreSQL 17 and configure high availability with a readable replica.
 - Create a manufacturing database and load sample production data.
 - Execute SQL queries to analyze work orders, production events, downtime, and quality alerts.
@@ -29,33 +28,35 @@ By the end of this lab, you will be able to:
 - Initiate a forced failover and monitor database connectivity during recovery.
 - Measure the approximate write interruption and validate recovery against the 120-second target.
 
+
 ## Exercise 1: Provision the SchedPro HorizonDB cluster
 
 In this exercise, you provision an Azure HorizonDB cluster for SchedPro's Manufacturing Execution System (MES). Configure PostgreSQL 17, zone-redundant high availability, and one readable replica. You will use the cluster in later exercises to load production data, run monitoring queries, and test failover behavior.
 
 ### Task 1: Open the create wizard
 
-1. Open a web browser and navigate to +++ https://portal.azure.com/+++.
+1. Open a web browser and navigate to +++ +++https://portal.azure.com/+++.
 
-2. Sign in to the **Azure portal** using the following credentials:
+1. Sign in to the **Azure portal** using the following credentials:
 
     Username - +++@lab.CloudPortalCredential(User1).Username+++
 
     TAP Token - +++@lab.CloudPortalCredential(User1).AccessToken+++
 
-    ![Screenshot](media/image-01.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-01.png)
 
-    ![Screenshot](media/image-02.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-02.png)
 
-    ![Screenshot](media/image-03.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-03.png)
 
-3. In the search box at the top of the page, enter +++**Azure HorizonDB**+++. Under **Services**, select **Azure HorizonDB**.
+1. In the search box at the top of the page, enter `Azure HorizonDB`. Under **Services**, select **Azure HorizonDB**.
 
-    ![Screenshot](media/image-04.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-04.png)
 
-4. Select **Create**.
+1. Select **Create**.
 
-    ![Screenshot](media/image-05.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-05.png)
+
 
 ### Task 2: Configure the cluster
 
@@ -63,95 +64,94 @@ In this exercise, you provision an Azure HorizonDB cluster for SchedPro's Manufa
 
     | **Setting** | **Value** |
     | --- | --- |
-    | Subscription | Your lab subscription |
-    | Resource group | ResourceGroup1 |
-    | Cluster name | schedpro-mes @lab.LabInstance.Id |
-    | Region | Central US |
+    | Subscription | @lab.CloudSubscription.Name |
+    | Resource group | @lab.CloudResourceGroup(HorizonDB-RG).Name |
+    | Cluster name | `schedpro-mes-@lab.LabInstance.Id` |
+    | Region | @lab.CloudResourceGroup(HorizonDB-RG).Location |
     | PostgreSQL version | **17** |
     | vCores | **2** |
     | High availability | **Zone redundant** |
     | Readable HA replicas | **1** |
     | Authentication | **PostgreSQL authentication** |
-    | Admin username | AdminHorizon |
-    | Admin password | Password@123! |
+    | Admin username | +++AdminHorizon+++ |
+    | Admin password | +++Password@123!+++ |
 
     Click **Next.**
 
-    ![Screenshot](media/image-06.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-06.png)
 
-    ![Screenshot](media/image-07.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-07.png)
+
 
 ### Task 3: Configure networking and create the cluster
 
 1. On the **Networking** tab, make sure the connectivity method is **Public access**.
 
-    ![Screenshot](media/image-08.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-08.png)
 
-2. Under firewall rules, enable **Allow public access from any Azure service within Azure to this cluster**.
+1. Under firewall rules, enable **Allow public access from any Azure service within Azure to this cluster**.
 
-    ![Screenshot](media/image-09.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-09.png)
 
-3. Select **Add current client IP address** to add your current public IP address to the firewall rules.
+1. Select **Add current client IP address** to add your current public IP address to the firewall rules.
 
-    ![Screenshot](media/image-10.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-10.png)
 
-    ![Screenshot](media/image-11.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-11.png)
 
-4. Select **Review + create**.
+1. Select **Review + create**.
 
-    ![Screenshot](media/image-12.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-12.png)
 
-5. Select **Create**.
+1. Select **Create**.
 
-    ![Screenshot](media/image-13.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-13.png)
 
-6. Wait for 10-15 mins to complete the deployment.
+1. Wait for 10-15 mins to complete the deployment.
 
-    ![Screenshot](media/image-14.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-14.png)
 
-7. Click **Go to resource group**.
+1. Click **Go to resource group**.
 
-    ![Screenshot](media/image-15.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-15.png)
 
-8. Select the newly created **HorizonDB cluster**.
+1. Select the newly created **HorizonDB cluster**.
 
-    ![Screenshot](media/image-16.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-16.png)
+
 
 ### Task 4: Connect to the cluster
 
 1. In the overview, copy the Primary endpoint and save it in Notepad. You will use it to connect to the cluster.
 
-    ![Screenshot](media/image-17.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-17.png)
 
-2. Open **Cloud Shell** from the Azure portal toolbar. Select **Bash**.
+1. Open **Cloud Shell** from the Azure portal toolbar. Select **Bash**.
 
-    ![Screenshot](media/image-18.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-18.png)
 
-3. Select **No storage account required**, select your subscription, and then select **Apply**. Wait for Azure Cloud Shell to initialize.
+1. Select **No storage account required**, select your subscription, and then select **Apply**. Wait for Azure Cloud Shell to initialize.
 
-    ![Screenshot](media/image-19.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-19.png)
 
-4. Run the following command to connect to HorizonDB. Replace `<horizon-endpoint>` with your cluster's primary endpoint
+1. Run the following command to connect to HorizonDB. Replace `<horizon-endpoint>` with your cluster's primary endpoint
 
-    ```
-    psql "host=<horizon-endpoint> port=5432 dbname=postgres user=AdminHorizon sslmode=require"
-    ```
+    `psql "host=<horizon-endpoint> port=5432 dbname=postgres user=AdminHorizon sslmode=require"`
 
     Example:
 
-    ```
-    psql "host= schedpro-mes23445.cce37d0f4ffb.centralus.horizondb.azure.com port=5432 dbname=postgres user= AdminHorizon sslmode=require"
-    ```
+    `psql "host= schedpro-mes23445.cce37d0f4ffb.centralus.horizondb.azure.com port=5432 dbname=postgres user= AdminHorizon sslmode=require"`
 
-    ![Screenshot](media/image-20.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-20.png)
 
-5. Enter the password: Password@123!
+1. Enter the password: Password@123!
 
-    ![Screenshot](media/image-21.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-21.png)
 
-6. Verify that the connection succeeds and the psql prompt appears.
+1. Verify that the connection succeeds and the psql prompt appears.
 
-    ![Screenshot](media/image-22.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-22.png)
+
 
 ## Exercise 2: Build the MES database
 
@@ -163,15 +163,16 @@ Create a dedicated database for SchedPro's MES workload and define connection sh
 
 1. In CloudShell, run the following command to create a database:
 
-    +++CREATE DATABASE schedpro;+++
+    `CREATE DATABASE schedpro;`
 
-    ![Screenshot](media/image-23.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-23.png)
 
-2. Reconnect to the newly created database:
+1. Reconnect to the newly created database:
 
-    +++\c schedpro+++
+    `\c schedpro`
 
-    ![Screenshot](media/image-24.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-24.png)
+
 
 ### Task 2: Create the machines table
 
@@ -190,19 +191,21 @@ Create a table to store the factory machines referenced by work orders and produ
     );
     ```
 
-    ![Screenshot](media/image-25.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-25.png)
 
-2. Review the table definition:
+1. Review the table definition:
 
     - `SERIAL PRIMARY KEY` generates a unique identifier for each machine.
     - `NOT NULL` requires a value for the plant and machine code.
     - `DEFAULT` supplies a value when status or target OEE is not specified.
 
-3. Verify the table structure:
 
-    +++\d machines+++
+1. Verify the table structure:
 
-    ![Screenshot](media/image-26.png)
+    `\d machines`
+
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-26.png)
+
 
 ### Task 3: Create the work_orders table
 
@@ -224,13 +227,14 @@ Create a table to track planned and actual production quantities for each work o
     );
     ```
 
-    ![Screenshot](media/image-27.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-27.png)
 
-2. Verify the table structure and inspect its foreign-key constraint:
+1. Verify the table structure and inspect its foreign-key constraint:
 
-    +++\d work_orders+++
+    `\d work_orders`
 
-    ![Screenshot](media/image-28.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-28.png)
+
 
 ### Task 4: Create the production_events table
 
@@ -249,71 +253,69 @@ Create a table for production telemetry collected from PLCs, including sensor re
     );
     ```
 
-    ![Screenshot](media/image-29.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-29.png)
 
-2. Review the main column definitions:
+1. Review the main column definitions:
 
     - `BIGSERIAL` provides a large auto-incrementing identifier for production events.
     - `NUMERIC(12,2)` stores numeric readings with two decimal places.
     - `TIMESTAMPTZ DEFAULT now()` records the event timestamp when no value is supplied.
 
-3. List the tables in the database:
 
-    +++\dt+++
+1. List the tables in the database:
 
-    ![Screenshot](media/image-30.png)
+    `\dt`
+
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-30.png)
+
 
 ### Task 5: Load the sample production data
 
 1. Select **Manage files->Upload** to upload the seed.sql file to Azure Cloud Shell.
 
-    ![Screenshot](media/image-31.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-31.png)
 
-2. Navigate to C:\LabFiles\seed.sql and select the file to upload.
+1. Navigate to C:\LabFiles\seed.sql and select the file to upload.
 
-    ![Screenshot](media/image-32.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-32.png)
 
-3. Enter the following command to exit from psql and return to the Bash prompt:
+1. Enter the following command to exit from psql and return to the Bash prompt:
 
-    +++\q+++
+    `\q`
 
-    ![Screenshot](media/image-33.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-33.png)
 
-4. Enter the following command to verify that the file exists in Azure Cloud Shell:
+1. Enter the following command to verify that the file exists in Azure Cloud Shell:
 
-    +++ls -lh ~/seed.sql+++
+    `ls -lh ~/seed.sql`
 
-    ![Screenshot](media/image-34.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-34.png)
 
-5. Run the following command to load the sample data into the schedpro database on Azure HorizonDB:
+1. Run the following command to load the sample data into the schedpro database on Azure HorizonDB:
 
-    ```
-    psql "host=<horizon-primary-endpoint> port=5432 dbname=schedpro user=AdminHorizon sslmode=require" -v ON_ERROR_STOP=1 -f ~/seed.sql
-    ```
+    `psql "host=<horizon-primary-endpoint> port=5432 dbname=schedpro user=AdminHorizon sslmode=require" -v ON_ERROR_STOP=1 -f ~/seed.sql`
 
-    ![Screenshot](media/image-35.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-35.png)
 
-6. Enter the password: Password@123!
+1. Enter the password: Password@123!
 
-    ![Screenshot](media/image-36.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-36.png)
 
-7. You will get the following output:
+1. You will get the following output:
 
-    ![Screenshot](media/image-37.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-37.png)
 
-8. Connect to the schedpro database by running the following command:
+1. Connect to the schedpro database by running the following command:
 
-    ```
-    psql "host=<horizon-primary-endpoint> port=5432 dbname=schedpro user=AdminHorizon sslmode=require"
-    ```
+    `psql "host=<horizon-primary-endpoint> port=5432 dbname=schedpro user=AdminHorizon sslmode=require"`
 
-    ![Screenshot](media/image-38.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-38.png)
 
-9. Enter password: Password@123!
+1. Enter password: Password@123!
 
-    ![Screenshot](media/image-39.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-39.png)
 
-10. Verify that the sample data has been loaded by running the following queries:
+1. Verify that the sample data has been loaded by running the following queries:
 
     ```
     SELECT COUNT(*) AS machines
@@ -326,9 +328,10 @@ Create a table for production telemetry collected from PLCs, including sensor re
     FROM production_events;
     ```
 
-    **Note:** Confirm that each query returns the expected number of records.
+    >[!Note] Confirm that each query returns the expected number of records.
 
-    ![Screenshot](media/image-40.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-40.png)
+
 
 ### Task 6: Run production queries
 
@@ -346,13 +349,13 @@ Run representative MES queries to review work-order progress and identify recent
     ORDER BY m.plant_code, m.machine_code;
     ```
 
-    ![Screenshot](media/image-41.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-41.png)
 
-2. Review the results to compare actual production quantities with planned quantities.
+1. Review the results to compare actual production quantities with planned quantities.
 
-    ![Screenshot](media/image-42.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-42.png)
 
-3. Run the following query to identify downtime and quality alerts recorded during the last hour:
+1. Run the following query to identify downtime and quality alerts recorded during the last hour:
 
     ```
     SELECT m.machine_code, e.event_type, count(*) AS events
@@ -364,9 +367,10 @@ Run representative MES queries to review work-order progress and identify recent
     ORDER BY events DESC;
     ```
 
-4. Review the output.
+1. Review the output.
 
-    ![Screenshot](media/image-43.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-43.png)
+
 
 ## Exercise 3: Route reporting queries to the read-only endpoint
 
@@ -380,47 +384,44 @@ Review the cluster's replica configuration to identify the endpoints used for pr
 
 1. In the Azure portal, open your HorizonDB cluster.
 
-2. Navigate to **Settings** > **Replicas**, to find the replica configuration.
+1. Navigate to **Settings** > **Replicas**, to find the replica configuration.
 
-    ![Screenshot](media/image-44.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-44.png)
 
-3. Confirm that you see one **ReadWrite** replica and one **Read** replica.
+1. Confirm that you see one **ReadWrite** replica and one **Read** replica.
 
-    ![Screenshot](media/image-45.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-45.png)
 
-4. Locate the read/write and read-only endpoint hostnames. Copy both values in Notepad for use in the following tasks.
+1. Locate the read/write and read-only endpoint hostnames. Copy both values in Notepad for use in the following tasks.
 
-    ![Screenshot](media/image-46.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-46.png)
+
 
 ### Task 2: Run the production report on the read-only endpoint
 
 Connect to the read-only endpoint and summarize production events across plants and machine types.
 
-1. In Azure Cloud Shell, select **Bash**. If you are connected to psql, enter +++\q+++ to return to the Bash prompt.
+1. In Azure Cloud Shell, select **Bash**. If you are connected to psql, enter `\q` to return to the Bash prompt.
 
-    ![Screenshot](media/image-47.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-47.png)
 
-2. Run the following command, replacing `<read-only-endpoint>` with the hostname identified in Task 1:
+1. Run the following command, replacing `<read-only-endpoint>` with the hostname identified in Task 1:
 
-    ```
-    psql "host=<read-only-endpoint> port=5432 dbname=schedpro user=AdminHorizon sslmode=require"
-    ```
+    `psql "host=<read-only-endpoint> port=5432 dbname=schedpro user=AdminHorizon sslmode=require"`
 
-    ![Screenshot](media/image-48.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-48.png)
 
-3. Enter password: Password@123!
+1. Enter password: Password@123!
 
-    ![Screenshot](media/image-49.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-49.png)
 
-4. Confirm that you are on a replica. `pg_is_in_recovery()` is a standard PostgreSQL function that returns `true` on a replica:
+1. Confirm that you are on a replica. `pg_is_in_recovery()` is a standard PostgreSQL function that returns `true` on a replica:
 
-    ```
-    SELECT pg_is_in_recovery() AS is_replica, current_database();
-    ```
+    `SELECT pg_is_in_recovery() AS is_replica, current_database();`
 
-    ![Screenshot](media/image-50.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-50.png)
 
-5. Run the following query to summarize production events by plant, machine type, and event type:
+1. Run the following query to summarize production events by plant, machine type, and event type:
 
     ```
     SELECT m.plant_code, m.machine_type, e.event_type,
@@ -432,11 +433,12 @@ Connect to the read-only endpoint and summarize production events across plants 
     LIMIT 10;
     ```
 
-    ![Screenshot](media/image-51.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-51.png)
 
-6. Review the results to identify the most frequently recorded event categories.
+1. Review the results to identify the most frequently recorded event categories.
 
-    ![Screenshot](media/image-52.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-52.png)
+
 
 ### Task 3: Verify that the read-only endpoint rejects writes
 
@@ -449,15 +451,16 @@ Attempt to insert a production event through the read-only endpoint and confirm 
     VALUES (1, 'PART_PRODUCED', 1, 'PLC-CNC-101');
     ```
 
-    ![Screenshot](media/image-53.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-53.png)
 
-2. Confirm that the operation fails with a read-only transaction or permission error. The exact error message may vary.
+1. Confirm that the operation fails with a read-only transaction or permission error. The exact error message may vary.
 
-    ![Screenshot](media/image-54.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-54.png)
 
-3. Leave the session with +++\q+++.
+1. Leave the session with `\q`.
 
-    ![Screenshot](media/image-55.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-55.png)
+
 
 ### Task 4: Verify that writes succeed on the primary
 
@@ -465,17 +468,15 @@ Connect to the primary endpoint and repeat the insert to confirm that the write 
 
 1. At the Cloud Shell Bash prompt, run the following command, replacing `<primary-endpoint>` with the read/write hostname identified in Task 1:
 
-    ```
-    psql "host=<primary-endpoint> port=5432 dbname=schedpro user=AdminHorizon sslmode=require"
-    ```
+    `psql "host=<primary-endpoint> port=5432 dbname=schedpro user=AdminHorizon sslmode=require"`
 
-    ![Screenshot](media/image-56.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-56.png)
 
-2. Enter password: +++Password@123!+++
+1. Enter password: +++Password@123!+++
 
-    ![Screenshot](media/image-57.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-57.png)
 
-3. Run the following statement:
+1. Run the following statement:
 
     ```
     SELECT pg_is_in_recovery() AS is_replica;
@@ -484,15 +485,16 @@ Connect to the primary endpoint and repeat the insert to confirm that the write 
     VALUES (1, 'PART_PRODUCED', 1, 'PLC-CNC-101');
     ```
 
-    ![Screenshot](media/image-58.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-58.png)
 
-4. Confirm that the insert succeeds.
+1. Confirm that the insert succeeds.
 
-    ![Screenshot](media/image-59.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-59.png)
 
-5. Leave the session with +++\q+++.
+1. Leave the session with `\q`.
 
-    ![Screenshot](media/image-60.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-60.png)
+
 
 ## Exercise 4: Test HorizonDB Failover and Measure Recovery
 
@@ -501,9 +503,9 @@ In this exercise, you will validate SchedPro Automotive Components GmbH's high-a
 SchedPro's PLC gateways can buffer only 120 seconds of production data. You will monitor database connectivity during failover, measure the approximate interruption to successful writes, and compare the observed recovery time with SchedPro's 120-second target.
 
 You will use two monitoring scripts:
-
 - **PLC gateway monitor:** Inserts a heartbeat event through the read/write endpoint approximately every second.
 - **OEE dashboard monitor:** Checks the reader endpoint approximately every second to observe read availability.
+
 
 You will initiate a forced failover through the Azure portal, observe both monitors, and validate database connectivity and heartbeat records after recovery.
 
@@ -513,24 +515,25 @@ In this task, you will identify the replica endpoints and configure the connecti
 
 1. Open the HorizonDB cluster you created in Exercise 1 in the Azure portal.
 
-2. Under Settings, select **High availability**, then select **Manage replicas and failover**.
+1. Under Settings, select **High availability**, then select **Manage replicas and failover**.
 
-    ![Screenshot](media/image-61.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-61.png)
 
-3. Identify the replicas and record their current roles:
+1. Identify the replicas and record their current roles:
 
     - The replica with the **ReadWrite** role is the primary endpoint for production writes.
     - The replica with the **Read** role is the reporting endpoint.
 
-    ![Screenshot](media/image-62.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-62.png)
 
-4. Copy both endpoint hostnames. Keep the portal open so you can return to it after the failover.
 
-    ![Screenshot](media/image-63.png)
+1. Copy both endpoint hostnames. Keep the portal open so you can return to it after the failover.
 
-5. Open Azure Cloud Shell and select **Bash**.
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-63.png)
 
-6. Set the connection variables. Replace the endpoint placeholders with the hostnames you copied in step 4.
+1. Open Azure Cloud Shell and select **Bash**.
+
+1. Set the connection variables. Replace the endpoint placeholders with the hostnames you copied in step 4.
 
     ```
     export PGHOST_RW="<read-write-endpoint>"
@@ -540,9 +543,9 @@ In this task, you will identify the replica endpoints and configure the connecti
     export PGPORT="5432"
     ```
 
-    ![Screenshot](media/image-64.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-64.png)
 
-7. Set the password for the current Cloud Shell session:
+1. Set the password for the current Cloud Shell session:
 
     ```
     read -s -p "HorizonDB password: " PGPASSWORD
@@ -550,37 +553,34 @@ In this task, you will identify the replica endpoints and configure the connecti
     export PGPASSWORD
     ```
 
-    ![Screenshot](media/image-65.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-65.png)
 
     When prompted, enter the PostgreSQL administrator password as +++Password@123!+++
 
-    ![Screenshot](media/image-66.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-66.png)
 
-8. Verify that the primary endpoint accepts a connection:
+1. Verify that the primary endpoint accepts a connection:
 
-    ```
-    psql "host=$PGHOST_RW port=$PGPORT dbname=$PGDATABASE user=$PGUSER sslmode=require connect_timeout=5" -c "SELECT current_database(), pg_is_in_recovery();"
-    ```
+    `psql "host=$PGHOST_RW port=$PGPORT dbname=$PGDATABASE user=$PGUSER sslmode=require connect_timeout=5" -c "SELECT current_database(), pg_is_in_recovery();"`
 
-    ![Screenshot](media/image-67.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-67.png)
 
     Expected result: current_database() returns schedpro and pg_is_in_recovery() returns false.
 
-    ![Screenshot](media/image-68.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-68.png)
 
-9. Verify that the read-only endpoint accepts a connection:
+1. Verify that the read-only endpoint accepts a connection:
 
-    ```
-    psql "host=$PGHOST_RO port=$PGPORT dbname=$PGDATABASE user=$PGUSER sslmode=require connect_timeout=5" -c "SELECT current_database(), pg_is_in_recovery();"
-    ```
+    `psql "host=$PGHOST_RO port=$PGPORT dbname=$PGDATABASE user=$PGUSER sslmode=require connect_timeout=5" -c "SELECT current_database(), pg_is_in_recovery();"`
 
-    ![Screenshot](media/image-69.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-69.png)
 
     Expected result: current_database() returns schedpro and pg_is_in_recovery() normally returns true when the reader endpoint connects to a standby replica.
 
-    ![Screenshot](media/image-70.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-70.png)
 
     If either connection fails, verify the endpoint hostname, firewall settings, database name, username, and password before continuing.
+
 
 ### Task 2: Create the monitoring scripts
 
@@ -640,9 +640,9 @@ In this task, you will create a script that repeatedly checks database availabil
     EOF
     ```
 
-    ![Screenshot](media/image-71.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-71.png)
 
-2. Review the script:
+1. Review the script:
 
     - The rw mode inserts a heartbeat record through the read/write endpoint.
     - The ro mode runs a read-only query through the reader endpoint.
@@ -650,27 +650,23 @@ In this task, you will create a script that repeatedly checks database availabil
     - When an operation fails and later succeeds, the script reports the approximate observed interruption.
     - The `-w` option prevents psql from repeatedly prompting for a password.
 
-3. Make the script executable using the following command:
 
-    ```
-    chmod +x watch.sh
-    ```
+1. Make the script executable using the following command:
 
-    ![Screenshot](media/image-72.png)
+    `chmod +x watch.sh`
 
-4. Verify that the file exists:
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-72.png)
 
-    ```
-    ls -l watch.sh
-    ```
+1. Verify that the file exists:
 
-    ![Screenshot](media/image-73.png)
+    `ls -l watch.sh`
 
-5. Run the following command:
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-73.png)
 
-    ```
-    sed -i 's/connect_timeout=2/connect_timeout=10/' watch.sh
-    ```
+1. Run the following command:
+
+    `sed -i 's/connect_timeout=2/connect_timeout=10/' watch.sh`
+
 
 ### Task 3: Start the PLC gateway and dashboard monitors
 
@@ -678,47 +674,48 @@ In this task, you will establish a baseline before initiating the failover.
 
 1. Open a second Azure Cloud Shell Bash session in another browser tab.
 
-2. In the second session, repeat the environment-variable setup from Task 1, using the same endpoint hostnames, username, database name, and password.
+1. In the second session, repeat the environment-variable setup from Task 1, using the same endpoint hostnames, username, database name, and password.
 
-    ![Screenshot](media/image-74.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-74.png)
 
-3. Create `watch.sh` in the second session by repeating Task 2 and make it executable.
+1. Create `watch.sh` in the second session by repeating Task 2 and make it executable.
 
-    ![Screenshot](media/image-75.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-75.png)
 
-    ![Screenshot](media/image-76.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-76.png)
 
-4. In the first Cloud Shell session, start the PLC gateway monitor:
+1. In the first Cloud Shell session, start the PLC gateway monitor:
 
-    +++./watch.sh rw+++
+    `./watch.sh rw`
 
-    ![Screenshot](media/image-77.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-77.png)
 
-5. In the second Cloud Shell session, start the OEE dashboard monitor:
+1. In the second Cloud Shell session, start the OEE dashboard monitor:
 
-    +++./watch.sh ro+++
+    `./watch.sh ro`
 
-    ![Screenshot](media/image-78.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-78.png)
 
-6. Observe both outputs for at least 10 seconds.
+1. Observe both outputs for at least 10 seconds.
 
     Expected result:
-
     - The PLC gateway monitor displays successful `INSERT` operations.
     - The dashboard monitor displays successful reads and the replica status.
     - Both monitors continue to print timestamped results approximately once per second.
 
     Output from the PLC gateway monitor:
 
-    ![Screenshot](media/image-79.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-79.png)
 
     Output from the OEE dashboard monitor:
 
-    ![Screenshot](media/image-80.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-80.png)
 
-7. Leave both monitors running.
+
+1. Leave both monitors running.
 
     If either monitor reports a connection failure before the failover begins, stop and troubleshoot it before proceeding.
+
 
 ### Task 4: Initiate a forced failover in Azure HorizonDB
 
@@ -726,25 +723,25 @@ In this task, you will simulate an unplanned database interruption while the PLC
 
 1. Return to the Azure portal and open the HorizonDB cluster you created in Exercise 1.
 
-2. Under **Settings**, select **High availability**, then select **Manage replicas and failover**.
+1. Under **Settings**, select **High availability**, then select **Manage replicas and failover**.
 
-    ![Screenshot](media/image-81.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-81.png)
 
-3. Review the current replica roles. Identify the replica assigned the **ReadWrite** role and the replica assigned the **Read** role.
+1. Review the current replica roles. Identify the replica assigned the **ReadWrite** role and the replica assigned the **Read** role.
 
-    ![Screenshot](media/image-82.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-82.png)
 
-4. Select **Forced failover**.
+1. Select **Forced failover**.
 
-    ![Screenshot](media/image-83.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-83.png)
 
-5. Select **Fail over.**
+1. Select **Fail over.**
 
-    ![Screenshot](media/image-84.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-84.png)
 
-6. While the failover is in progress, observe both Cloud Shell sessions. Do not stop the monitoring scripts.
+1. While the failover is in progress, observe both Cloud Shell sessions. Do not stop the monitoring scripts.
 
-7. Record the results in the following table.
+1. Record the results in the following table.
 
     | **Observation** | **PLC gateway monitor (rw)** | **OEE dashboard monitor (ro)** |
     | --- | --- | --- |
@@ -757,15 +754,16 @@ In this task, you will simulate an unplanned database interruption while the PLC
 
     The write monitor may report connection failures during failover and should resume successful inserts when the read/write endpoint becomes available again.
 
-    ![Screenshot](media/image-85.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-85.png)
 
     **Window 2 output — OEE dashboard monitor (ro):**
 
     The reader endpoint's reported replica status may change after failover. A true result indicates that the current connection is to a standby; a false result indicates that it is connected to a primary.
 
-    ![Screenshot](media/image-86.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-86.png)
 
-**Note:** The exact interruption duration and number of failed checks depend on the environment. Do not assume that either endpoint will remain continuously available.
+    >[!Note] The exact interruption duration and number of failed checks depend on the environment. Do not assume that either endpoint will remain continuously available.
+
 
 ### Task 5: Validate committed production data
 
@@ -773,15 +771,13 @@ In this task, you will verify that the database remains accessible after failove
 
 1. In both Cloud Shell sessions, press Ctrl+C to stop the monitoring scripts.
 
-2. In either Cloud Shell session, connect through the read/write endpoint:
+1. In either Cloud Shell session, connect through the read/write endpoint:
 
-    ```
-    psql "host=$PGHOST_RW port=$PGPORT dbname=$PGDATABASE user=$PGUSER sslmode=require connect_timeout=10"
-    ```
+    `psql "host=$PGHOST_RW port=$PGPORT dbname=$PGDATABASE user=$PGUSER sslmode=require connect_timeout=10"`
 
-    ![Screenshot](media/image-87.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-87.png)
 
-3. Run the following query to count the committed heartbeat records:
+1. Run the following query to count the committed heartbeat records:
 
     ```
     SELECT
@@ -791,15 +787,15 @@ In this task, you will verify that the database remains accessible after failove
     AND plc_id = 'PLC-WATCH';
     ```
 
-    ![Screenshot](media/image-88.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-88.png)
 
-4. Confirm that the query completes successfully and returns a count.
+1. Confirm that the query completes successfully and returns a count.
 
-    ![Screenshot](media/image-89.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-89.png)
 
-    **Note:** The heartbeat count can include records from previous monitoring runs that used the same PLC-WATCH identifier. Therefore, use the count to confirm that heartbeat records exist, not as an exact measure of the writes completed during this failover test.
+    >[!Note] The heartbeat count can include records from previous monitoring runs that used the same PLC-WATCH identifier. Therefore, use the count to confirm that heartbeat records exist, not as an exact measure of the writes completed during this failover test.
 
-5. Verify that the connection reaches the current primary:
+1. Verify that the connection reaches the current primary:
 
     ```
     SELECT
@@ -807,29 +803,25 @@ In this task, you will verify that the database remains accessible after failove
     pg_is_in_recovery() AS is_replica;
     ```
 
-    ![Screenshot](media/image-90.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-90.png)
 
     **Expected result:** database_name is schedpro and is_replica is false.
 
-    ![Screenshot](media/image-91.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-91.png)
 
-6. Exit the PostgreSQL session:
+1. Exit the PostgreSQL session:
 
-    ```
-    \q
-    ```
+    `\q`
 
-    ![Screenshot](media/image-92.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-92.png)
 
-7. If the read-only endpoint is accessible, connect to it using the following command:
+1. If the read-only endpoint is accessible, connect to it using the following command:
 
-    ```
-    psql "host=$PGHOST_RO port=$PGPORT dbname=$PGDATABASE user=$PGUSER sslmode=require connect_timeout=10"
-    ```
+    `psql "host=$PGHOST_RO port=$PGPORT dbname=$PGDATABASE user=$PGUSER sslmode=require connect_timeout=10"`
 
-    ![Screenshot](media/image-93.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-93.png)
 
-8. Run the same recovery-status query. Confirm that pg_is_in_recovery() returns true.
+1. Run the same recovery-status query. Confirm that pg_is_in_recovery() returns true.
 
     ```
     SELECT
@@ -837,35 +829,37 @@ In this task, you will verify that the database remains accessible after failove
     pg_is_in_recovery() AS is_replica;
     ```
 
-    ![Screenshot](media/image-94.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-94.png)
 
     Observe the output. If the reader endpoint connects to a standby, is_replica should be true. If it returns false, the endpoint is currently routing the connection to a primary; record the observed result rather than assuming the endpoint is unavailable.
 
-    ![Screenshot](media/image-95.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-95.png)
 
-9. Exit the PostgreSQL session:
+1. Exit the PostgreSQL session:
 
-    +++\q+++
+    `\q`
 
-    ![Screenshot](media/image-96.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-96.png)
+
 
 ## Exercise 5: Clean up resources
 
 The cluster has multiple replicas and is billed while it runs. When your session ends:
 
-1. In the Azure portal, search for **Resource groups**
+1. In the Azure portal, search for `Resource groups`
 
-2. Select ResourceGroup1 and select the horizon db cluster.
+1. Select HorizonDB-RG and select the horizon db cluster.
 
-    ![Screenshot](media/image-97.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-97.png)
 
-3. Select the **three dots(…)->Delete.**
+1. Select the **three dots(…)->Delete.**
 
-    ![Screenshot](media/image-98.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-98.png)
 
-4. Enter +++delete+++ and then select Delete to delete the HorizonDB cluster.
+1. Enter `delete` and then select Delete to delete the HorizonDB cluster.
 
-    ![Screenshot](media/image-99.png)
+    ![Screenshot](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%209/media/image-99.png)
+
 
 ## Summary
 

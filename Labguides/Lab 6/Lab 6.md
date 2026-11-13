@@ -296,11 +296,29 @@ Now prove the controls work. The script connects as each user in turn and tries 
    USERS = ['paralegal_pat', 'associate_ann', 'partner_sam']
    QUESTION = 'How should we advise a client who wants to enforce a non-compete against a departing executive?'
 
+    def write_attempt(conn, sql):
+        try:
+            conn.execute(sql)
+            return 'ALLOWED'
+        except psycopg.Error as exc:
+            return 'DENIED (' + type(exc).__name__ + ')'
 
    def connect(user):
        dsn = f'host={HOST} port=5432 dbname=legalai_lab user={user} password={PASSWORD} sslmode=require'
        return psycopg.connect(dsn, autocommit=True)
 
+    for user in USERS:
+        with connect(user) as conn:
+            print('=== ' + user + ' ===')
+            print('visible documents :', rows(conn, 'SELECT doc_id FROM legal.documents ORDER BY doc_id'))
+            print('top 3 for the question :', rows(conn, 'SELECT doc_id FROM legal.documents ORDER BY embedding <=> legal.embed(%s::text) LIMIT 3', (QUESTION,)))
+            print('related to CASE-002 :', rows(conn, "SELECT doc_id FROM legal.related_docs('CASE-002', 10)"))
+            print('raw graph function :', rows(conn, "SELECT doc_id FROM legal.graph_neighbors_raw('NOTE-001')"))
+            print('graph tables :', rows(conn, 'SELECT 1 FROM legal_graph."Document" LIMIT 1'))
+            print('message authors visible:', rows(conn, 'SELECT DISTINCT db_user FROM legal.agent_messages'))
+            print('edit a document :', write_attempt(conn, "UPDATE legal.documents SET title = 'x' WHERE doc_id = 'CASE-001'"))
+            print()
+    ```
 
    def rows(conn, sql, params=None):
        try:

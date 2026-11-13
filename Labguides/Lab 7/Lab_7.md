@@ -10,21 +10,16 @@ CartWise Retail is an online retailer that sells electronics, sports gear, appar
 
 **The solution.** As the platform developer, you move this work into Azure HorizonDB and expose it to applications. You use PostgreSQL extensions to search products with typos (pg_trgm), query flexible JSONB return data, and run recurring jobs (pg_cron). You put the approval rules inside the database as a transactional function, so no client can bypass them, expire stale requests on a schedule, and publish events with LISTEN and NOTIFY. Finally, you expose everything through a REST API written in Python, using a standard PostgreSQL driver and a connection pool. The lab also creates the **cartwise** database that you reuse in Lab 8.
 
-## Objectives
+### Objectives
 
 After you complete this lab, you will be able to:
-
 - Deploy an Azure HorizonDB cluster and enable extensions by using a parameter group.
-
 - Allow, preload and create extensions, and know which ones need a restart.
-
 - Use pg_trgm for fuzzy search and a GIN index for JSONB queries.
-
 - Schedule recurring jobs with pg_cron, including jobs that run in another database.
-
 - Implement approval rules as a PL/pgSQL function, and publish events with a trigger and pg_notify.
-
 - Build a REST API on HorizonDB by using Python, FastAPI and a connection pool.
+
 
 ## Exercise 0: Lab setup
 
@@ -34,64 +29,65 @@ In this exercise, you deploy the HorizonDB cluster and attach a parameter group 
 
 In this task, you create a two-vCore HorizonDB cluster in the Azure portal.
 
-1. Open a web browser and go to `+++https://portal.azure.com/+++`.
+1. Open a web browser and go to +++https://portal.azure.com/+++.
 
-2. Sign in to the Azure portal with the following credentials:
+1. Sign in to the Azure portal with the following credentials:
 
-    - **Username:** `+++@lab.CloudPortalCredential(User1).Username+++`
+    - **Username:** +++@lab.CloudPortalCredential(User1).Username+++
+    - **TAP Token:** +++@lab.CloudPortalCredential(User1).AccessToken+++
 
-    - **TAP Token:** `+++@lab.CloudPortalCredential(User1).AccessToken+++`
+    ![A screenshot of a sign in box  AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image1.png)
 
-    ![A screenshot of a sign in box  AI-generated content may be incorrect.](media/image1.png)
+    ![A screenshot of a login screen  AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image2.png)
 
-    ![A screenshot of a login screen  AI-generated content may be incorrect.](media/image2.png)
+    ![A screenshot of a computer  AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image3.png)
 
-    ![A screenshot of a computer  AI-generated content may be incorrect.](media/image3.png)
 
-3. In the search box at the top of the page, enter `+++Azure HorizonDB+++`. Under **Services**, select **Azure HorizonDB**.
+1. In the search box at the top of the page, enter `Azure HorizonDB`. Under **Services**, select **Azure HorizonDB**.
 
-    ![](media/image4.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image4.png)
 
-4. Select **Create**.
+1. Select **Create**.
 
-    ![A screenshot of a computer  AI-generated content may be incorrect.](media/image5.png)
+    ![A screenshot of a computer  AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image5.png)
 
-5. On the **Basics** tab, enter the values in the following table. Leave all other settings at their defaults, and then select **Next**.
+1. On the **Basics** tab, enter the values in the following table. Leave all other settings at their defaults, and then select **Next**.
 
     | **Setting** | **Value** |
     |---|---|
-    | Subscription | Your lab subscription |
-    | Resource group | ResourceGroup1 |
-    | Cluster name | cartwise@lab.LabInstance.Id |
-    | Region | Central US |
+    | Subscription | @lab.CloudSubscription.Name |
+    | Resource group | @lab.CloudResourceGroup(HorizonDB-RG).Name |
+    | Cluster name | `cartwise@lab.LabInstance.Id` |
+    | Region | @lab.CloudResourceGroup(HorizonDB-RG).Location |
     | PostgreSQL version | 17 |
     | vCores | 2 |
     | High availability | Disabled |
     | Authentication | PostgreSQL authentication |
-    | Admin username | cartwise |
-    | Admin password | Password@123! |
+    | Admin username | +++cartwise+++ |
+    | Admin password | +++Password@123!+++ |
 
-    ![](media/image6.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image6.png)
 
-    ![](media/image7.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image7.png)
 
-    ![](media/image8.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image8.png)
 
-6. On the **Networking** tab, under **Firewall rules**, select **Allow public access from any Azure service within Azure to this cluster**.
+1. On the **Networking** tab, under **Firewall rules**, select **Allow public access from any Azure service within Azure to this cluster**.
 
-    ![](media/image9.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image9.png)
 
-7. Select **Add current client IP address** to add your public IP address to the firewall rules, and then select **Review + create**.
+1. Select **Add current client IP address** to add your public IP address to the firewall rules, and then select **Review + create**.
 
-    ![](media/image10.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image10.png)
 
-8. Review the summary, and then select **Create**.
+1. Review the summary, and then select **Create**.
 
-    ![](media/image11.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image11.png)
 
-9. Wait for the deployment to finish. This takes about 10 to 15 minutes.
+1. Wait for the deployment to finish. This takes about 10 to 15 minutes.
 
-10. When the deployment completes, select **Go to resource group**, and then open the newly created HorizonDB cluster.
+1. When the deployment completes, select **Go to resource group**, and then open the newly created HorizonDB cluster.
+
 
 ### Task 2: Create the parameter group and allow-list the extensions
 
@@ -99,52 +95,53 @@ In this task, you create a parameter group that allows five extensions and prelo
 
 1. In the Azure portal, open the cluster **cartwise@lab.LabInstance.Id**, and then select **Settings** \> **Parameters**. Next to **Parameter group**, select **(create)**.
 
-    ![](media/image12.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image12.png)
 
-2. On the **Create a parameter group** page, enter the following values, and then select **Next**.
+1. On the **Create a parameter group** page, enter the following values, and then select **Next**.
 
     | **Setting** | **Value** |
     |---|---|
-    | Subscription | Your lab subscription |
-    | Resource group | ResourceGroup1 |
-    | Parameter group name | cartwise-pg |
-    | Region | Central US (must match the cluster) |
+    | Subscription | @lab.CloudSubscription.Name |
+    | Resource group | @lab.CloudResourceGroup(HorizonDB-RG).Name |
+    | Parameter group name | `cartwise-pg` |
+    | Region | @lab.CloudResourceGroup(HorizonDB-RG).Location (must match the cluster) |
     | PostgreSQL version | 17 |
     | Parameter group (base) | PostgreSQL 17 |
 
-    ![](media/image13.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image13.png)
 
-3. On the parameters page, filter for `+++azure.extensions+++`. In the parameter drop-down list, select the following values: **pg_cron**, **pg_trgm**, **pg_stat_statements**, **pg_buffercache** and **pgstattuple**.
+1. On the parameters page, filter for `azure.extensions`. In the parameter drop-down list, select the following values: **pg_cron**, **pg_trgm**, **pg_stat_statements**, **pg_buffercache** and **pgstattuple**.
 
-    ![](media/image14.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image14.png)
 
-4. Search for `+++shared_preload_libraries+++`. In the drop-down list, select **pg_cron** and **pg_stat_statements**.
+1. Search for `shared_preload_libraries`. In the drop-down list, select **pg_cron** and **pg_stat_statements**.
 
-    ![](media/image15.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image15.png)
 
-5. Search for `+++pg_stat_statements.track+++`, and set the value to **top**. Then select **Create**.
+1. Search for `pg_stat_statements.track`, and set the value to `top`. Then select **Create**.
 
-    ![](media/image16.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image16.png)
 
-6. Select **Go to resource**, and then open the HorizonDB cluster.
+1. Select **Go to resource**, and then open the HorizonDB cluster.
 
-    **Note:** The deployment takes 4 to 5 minutes to complete.
+    >[!Note] The deployment takes 4 to 5 minutes to complete.
 
-7. Select **Settings** \> **Parameters**, and then select **(change)** next to **Parameter group**.
+1. Select **Settings** \> **Parameters**, and then select **(change)** next to **Parameter group**.
 
-    ![](media/image17.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image17.png)
 
-8. Select **cartwise-pg**, and then select **Save**. Because the parameters are static, the cluster restarts automatically when you attach the group.
+1. Select **cartwise-pg**, and then select **Save**. Because the parameters are static, the cluster restarts automatically when you attach the group.
 
-    ![](media/image18.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image18.png)
 
-9. On the **Parameters** page, select **Refresh**, and then confirm that the parameter group is **cartwise-pg**.
+1. On the **Parameters** page, select **Refresh**, and then confirm that the parameter group is **cartwise-pg**.
 
-    ![](media/image19.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image19.png)
 
-10. Go to the **Overview** page, and then copy and save the **Primary endpoint** value. You use it in the exercises that follow.
+1. Go to the **Overview** page, and then copy and save the **Primary endpoint** value. You use it in the exercises that follow.
 
-    ![](media/image20.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image20.png)
+
 
 ## Exercise 1: Create the CartWise database, extensions and data
 
@@ -156,71 +153,70 @@ In this task, you connect to the cluster from Visual Studio Code and create an e
 
 1. Open Visual Studio Code, and then select the **PostgreSQL** extension.
 
-    **Note:** If the PostgreSQL extension isn't available, select **Extensions**, search for `PostgreSQL`, and then select **Install**.
+    >[!Note] If the PostgreSQL extension isn't available, select **Extensions**, search for `PostgreSQL`, and then select **Install**.
 
-    ![](media/image21.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image21.png)
 
-2. Select **+ Add connection**.
+1. Select **+ Add connection**.
 
-    ![](media/image22.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image22.png)
 
-3. Enter the following connection details:
+1. Enter the following connection details:
 
     | **Setting** | **Suggested value** |
     |---|---|
     | Server name | The primary endpoint that you saved in Exercise 0, Task 2, step 10 |
     | Authentication Type | Password |
-    | Admin username | cartwise |
-    | Admin password | Password@123! |
+    | Admin username | +++cartwise+++ |
+    | Admin password | +++Password@123!+++ |
     | Connection Name | PostgresDB |
     | Server Group | Servers |
 
-    ![](media/image23.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image23.png)
 
-4. Select **Test connection**. After the test succeeds, select **Save & Connect**.
+1. Select **Test connection**. After the test succeeds, select **Save & Connect**.
 
-    ![](media/image24.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image24.png)
 
-    ![](media/image25.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image25.png)
 
-5. Select **New Query**.
+1. Select **New Query**.
 
-    ![](media/image26.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image26.png)
 
-6. Enter the following command, and then select the **Play** button to run it:
+1. Enter the following command, and then select the **Play** button to run it:
 
-    ```powershell
-    +++CREATE DATABASE cartwise+++
-    ```
+    `CREATE DATABASE cartwise`
 
-    ![](media/image27.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image27.png)
 
     Your new database is created.
 
-7. Select **Add a new connection** to create a connection that uses cartwise as its database.
+1. Select **Add a new connection** to create a connection that uses cartwise as its database.
 
-    ![](media/image28.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image28.png)
 
-8. Enter the following details:
+1. Enter the following details:
 
     | **Setting** | **Suggested value** |
     |---|---|
     | Server name | The primary endpoint that you saved in Exercise 0, Task 2, step 10 |
     | Authentication Type | Password |
-    | Admin username | cartwise |
-    | Admin password | Password@123! |
+    | Admin username | +++cartwise+++ |
+    | Admin password | +++Password@123!+++ |
     | Database | cartwise |
     | Server Group | Servers |
 
-    ![](media/image29.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image29.png)
 
-    ![](media/image30.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image30.png)
 
-9. Select **Test Connection**. After the test succeeds, select **Save & Connect**.
+1. Select **Test Connection**. After the test succeeds, select **Save & Connect**.
 
-    ![](media/image31.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image31.png)
 
-    ![](media/image32.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image32.png)
+
 
 ### Task 2: Create the extensions
 
@@ -228,9 +224,9 @@ In this task, you create four extensions in the cartwise database. Allow-listing
 
 1. Select New Query.
 
-    ![](media/image33.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image33.png)
 
-2. In a new query window that is connected to the **cartwise** database, run the following commands:
+1. In a new query window that is connected to the **cartwise** database, run the following commands:
 
     ```sql
     CREATE EXTENSION IF NOT EXISTS pg_trgm;
@@ -243,7 +239,8 @@ In this task, you create four extensions in the cartwise database. Allow-listing
 
     Confirm that the result lists all four extensions.
 
-    ![](media/image34.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image34.png)
+
 
 ### Task 3: Create the schema
 
@@ -295,7 +292,8 @@ In this task, you create the retail schema and the five tables that hold product
     );
     ```
 
-    ![](media/image35.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image35.png)
+
 
 ### Task 4: Load sample data
 
@@ -339,11 +337,12 @@ In this task, you load about 50 products, 5,000 orders and roughly 600 returns. 
            (SELECT count(*) FROM retail.returns)  AS returns;
     ```
 
-    ![](media/image36.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image36.png)
 
-2. Verify that the result shows 50 products, 5,000 orders and about 600 returns.
+1. Verify that the result shows 50 products, 5,000 orders and about 600 returns.
 
-    ![](media/image37.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image37.png)
+
 
 ## Exercise 2: Fuzzy search, JSONB and a scheduled job
 
@@ -365,13 +364,14 @@ Customers mistype product names, and pg_trgm compares strings by their three-let
     LIMIT 5;
     ```
 
-    ![](media/image38.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image38.png)
 
-2. Review the results. The top rows are the Wireless Headphones products, even though the search word is misspelled. The `<<->` operator measures word similarity distance, and the GiST index can serve this kind of nearest-match ordering.
+1. Review the results. The top rows are the Wireless Headphones products, even though the search word is misspelled. The `<<->` operator measures word similarity distance, and the GiST index can serve this kind of nearest-match ordering.
 
-    ![](media/image39.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image39.png)
 
-    **Note:** On 50 rows the planner might still scan the table. This is expected. The index matters when the catalog grows.
+    >[!Note] On 50 rows the planner might still scan the table. This is expected. The index matters when the catalog grows.
+
 
 ### Task 2: Query semi-structured return data
 
@@ -386,9 +386,9 @@ Return metadata is stored as JSONB, so each return can carry different attribute
     ORDER BY returns DESC;
     ```
 
-    ![](media/image40.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image40.png)
 
-2. Add a GIN index, and then use the containment operator to find damaged returns that arrived through the mobile channel:
+1. Add a GIN index, and then use the containment operator to find damaged returns that arrived through the mobile channel:
 
     ```sql
     CREATE INDEX idx_returns_metadata ON retail.returns USING gin (metadata jsonb_path_ops);
@@ -399,9 +399,10 @@ Return metadata is stored as JSONB, so each return can carry different attribute
     WHERE metadata @> '{"reason": "damaged", "channel": "mobile"}';
     ```
 
-    **Note:** On a table this small, the planner might still choose a sequential scan. This is expected. The index pays off as the table grows.
+    >[!Note] On a table this small, the planner might still choose a sequential scan. This is expected. The index pays off as the table grows.
 
-    ![](media/image41.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image41.png)
+
 
 ### Task 3: Create the refresh procedure
 
@@ -426,7 +427,8 @@ In this task, you create a stored procedure that rebuilds the returns summary ta
     SELECT * FROM retail.return_stats ORDER BY refunded DESC LIMIT 5;
     ```
 
-    ![](media/image42.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image42.png)
+
 
 ### Task 4: Schedule the refresh by using pg_cron
 
@@ -434,11 +436,11 @@ pg_cron keeps its job tables in the default postgres database, and it can run a 
 
 1. Select the PostgreSQL connection in the Connections section, right-click it, and select Get Started → New Query.
 
-    ![](media/image43.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image43.png)
 
-    ![](media/image44.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image44.png)
 
-2. In a new query window that is connected to the **postgres** database, run the following commands:
+1. In a new query window that is connected to the **postgres** database, run the following commands:
 
     ```sql
     CREATE EXTENSION IF NOT EXISTS pg_cron;
@@ -453,13 +455,13 @@ pg_cron keeps its job tables in the default postgres database, and it can run a 
     SELECT jobid, jobname, schedule, database, active FROM cron.job;
     ```
 
-    **Note:** The schedule `* * * * *` runs every minute, which is only for this lab. A production schedule would be nightly, for example `0 2 * * *`. Cron times are in GMT.
+    >[!Note] The schedule `* * * * *` runs every minute, which is only for this lab. A production schedule would be nightly, for example `0 2 * * *`. Cron times are in GMT.
 
-    ![](media/image45.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image45.png)
 
     **Troubleshooting:** If you get the error `can only create extension in database postgres` (with a detail about `cron.database_name`), you ran the statements while connected to the cartwise database. pg_cron works only from the postgres database. Run the statements in the **postgres** connection, and then switch back to the **cartwise** connection for the rest of the lab.
 
-3. Wait about two minutes. In the **postgres** connection, run the following query:
+1. Wait about two minutes. In the **postgres** connection, run the following query:
 
     ```sql
     SELECT jobid, status, return_message, start_time, end_time
@@ -468,13 +470,12 @@ pg_cron keeps its job tables in the default postgres database, and it can run a 
     LIMIT 5;
     ```
 
-4. Switch back to the **cartwise** connection, and run the following query to confirm that the scheduler refreshed the stats:
+1. Switch back to the **cartwise** connection, and run the following query to confirm that the scheduler refreshed the stats:
 
-    ```sql
-    SELECT max(refreshed_at) AS last_refresh, now() - max(refreshed_at) AS age FROM retail.return_stats;
-    ```
+    `SELECT max(refreshed_at) AS last_refresh, now() - max(refreshed_at) AS age FROM retail.return_stats;`
 
-    The fuzzy search finds headphones, `cron.job_run_details` shows successful runs, and the refresh timestamp is under two minutes old. Leave the job running.
+    >[!Note] The fuzzy search finds headphones, `cron.job_run_details` shows successful runs, and the refresh timestamp is under two minutes old. Leave the job running.
+
 
 ## Exercise 3: Approval rules and events in the database
 
@@ -482,7 +483,7 @@ Business rules that must never be bypassed belong next to the data. In this exer
 
 ### Task 1: Create the functions and the trigger
 
-In this task, you create two functions and a trigger. One function enforces the approval rule, one expires stale requests, and the trigger publishes an event for each new request.
+>[!Note] In this task, you create two functions and a trigger. One function enforces the approval rule, one expires stale requests, and the trigger publishes an event for each new request.
 
 1. In the **cartwise** connection, run the following commands:
 
@@ -552,10 +553,10 @@ In this task, you create two functions and a trigger. One function enforces the 
       FOR EACH ROW WHEN (NEW.status = 'requested')
       EXECUTE FUNCTION retail.notify_return();
     ```
+    >[!Note] The `FOR UPDATE` row lock means that two managers who decide the same return at the same moment cannot both succeed. The second manager waits, then sees the new status and gets an error.
 
-    The `FOR UPDATE` row lock means that two managers who decide the same return at the same moment cannot both succeed. The second manager waits, then sees the new status and gets an error.
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image46.png)
 
-    ![](media/image46.png)
 
 ### Task 2: Test the approval rules in SQL
 
@@ -572,13 +573,13 @@ In this task, you create a high-value return and try to decide it twice. The sec
     RETURNING return_id, status, refund_amount;
     ```
 
-    ![](media/image47.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image47.png)
 
-2. Note the `return_id` in the result we will use this in the next step.
+    >[!Note] The `return_id` in the result we will use this in the next step.
 
-    ![](media/image48.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image48.png)
 
-3. In the following commands, replace both instances of `<return-id>` with that value, and then run them:
+1. In the following commands, replace both instances of `<return-id>` with that value, and then run them:
 
     ```sql
     SELECT * FROM retail.decide_return(<return-id>, true, 'manager@cartwise.example');
@@ -586,15 +587,14 @@ In this task, you create a high-value return and try to decide it twice. The sec
     SELECT * FROM retail.decide_return(<return-id>, false, 'manager@cartwise.example');
     ```
 
-    ![](media/image49.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image49.png)
 
-4. The first call returns **approved**. The second call fails with a message that the return is already approved. Check the audit trail by running the following query:
+1. The first call returns **approved**. The second call fails with a message that the return is already approved. Check the audit trail by running the following query:
 
-    ```sql
-    SELECT * FROM retail.ops_log ORDER BY log_id DESC LIMIT 3;
-    ```
+    `SELECT * FROM retail.ops_log ORDER BY log_id DESC LIMIT 3;`
 
-    ![](media/image50.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image50.png)
+
 
 ### Task 3: Expire unanswered requests
 
@@ -611,17 +611,16 @@ In this task, you create a second return and expire it immediately by using a ze
     RETURNING return_id;
     ```
 
-    ![](media/image51.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image51.png)
 
-2. Run the following command:
+1. Run the following command:
 
-    ```sql
-    SELECT retail.expire_stale_returns(0);
-    ```
+    `SELECT retail.expire_stale_returns(0);`
 
-    Confirm that the function returns **1** and that the return now has the status **expired**.
+    >[!Note] Confirm that the function returns **1** and that the return now has the status **expired**.
 
-    ![](media/image52.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image52.png)
+
 
 ### Task 4: Schedule the expiry by using pg_cron
 
@@ -640,11 +639,11 @@ In this task, you schedule the expiry function so that it runs without anyone st
     SELECT jobid, jobname, schedule, database FROM cron.job ORDER BY jobid;
     ```
 
-    Verify that the job was created by checking the returned job ID. For example, a result of 2 indicates that the job was assigned ID 2.
+    >[!Note] Verify that the job was created by checking the returned job ID. For example, a result of 2 indicates that the job was assigned ID 2.
 
-    ![](media/image53.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image53.png)
 
-2. Verify that both scheduled jobs are listed:
+1. Verify that both scheduled jobs are listed:
 
     ```sql
     SELECT jobid, jobname, schedule, database
@@ -654,9 +653,10 @@ In this task, you schedule the expiry function so that it runs without anyone st
 
     The query should list both the existing refresh job and the newly created `expire-stale-returns` job. The new job should show the schedule `*/5 * * * *` and the database `cartwise`.
 
-    ![](media/image54.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image54.png)
 
     Every five minutes, the job checks for returns that have been awaiting a decision for more than 10 minutes and expires eligible returns, according to the function's implementation.
+
 
 ## Exercise 4: A REST API for the returns service
 
@@ -668,15 +668,14 @@ In this task, you install the web framework, the web server and the PostgreSQL d
 
 1. Open a new terminal.
 
-    ![](media/image55.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image55.png)
 
-2. Run the following command to install packages:
+1. Run the following command to install packages:
 
-    ```powershell
-    pip install fastapi "uvicorn[standard]" "psycopg[binary,pool]"
-    ```
+    `pip install fastapi "uvicorn[standard]" "psycopg[binary,pool]"`
 
-    ![](media/image56.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image56.png)
+
 
 ### Task 2: Set the connection variables
 
@@ -690,7 +689,8 @@ In this task, you store the connection details in environment variables so the A
     $env:PGPASSWORD="Password@123!"
     ```
 
-    ![](media/image57.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image57.png)
+
 
 ### Task 3: Create the API
 
@@ -698,11 +698,11 @@ In this task, you create the API code. It exposes four endpoints: search product
 
 1. Navigate to File explorer, select File-\>New file-\>Python File.
 
-    ![](media/image58.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image58.png)
 
-    ![](media/image59.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image59.png)
 
-2. In Visual Studio Code, create a new file named **returns_api.py**, and then add the following code:
+1. In Visual Studio Code, create a new file named `returns_api.py`, and then add the following code:
 
     ```python
     import os
@@ -781,13 +781,14 @@ In this task, you create the API code. It exposes four endpoints: search product
         return row
     ```
 
-    ![](media/image60.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image60.png)
 
-    Notice what the API does not contain: no approval logic. The rules live in `retail.decide_return`, so every client (this API, a batch job or a support tool) gets the same behavior.
+    >[!Note] Notice what the API does not contain: no approval logic. The rules live in `retail.decide_return`, so every client (this API, a batch job or a support tool) gets the same behavior.
 
-    Note: Save this file in Documents.
+    >[!Note] Save this file in Documents.
 
-    ![](media/image61.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image61.png)
+
 
 ### Task 4: Start the API and open the test page
 
@@ -796,17 +797,18 @@ In this task, you start the API and open the interactive test page that FastAPI 
 1. In the terminal where you set the connection variables, go to the folder that contains **returns_api.py**, and then run the following command:
 
     ```powershell
-    +++cd documents+++
-    +++python -m uvicorn returns_api:app --port 8000+++
+    cd documents
+    python -m uvicorn returns_api:app --port 8000
     ```
 
-    ![](media/image62.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image62.png)
 
-2. Open a browser and go to `http://127.0.0.1:8000/docs`. FastAPI generates an interactive test page where you can call each endpoint by selecting **Try it out**.
+1. Open a browser and go to +++http://127.0.0.1:8000/docs+++. FastAPI generates an interactive test page where you can call each endpoint by selecting **Try it out**.
 
-    ![](media/image63.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image63.png)
 
-    **Note:** If you open only `http://127.0.0.1:8000` (without `/docs`), the browser shows `{"detail":"Not Found"}`. This is normal and proves that the API is running. The API defines no page at the root address, so add `/docs` to the address.
+    >[!Note] If you open only `http://127.0.0.1:8000` (without `/docs`), the browser shows `{"detail":"Not Found"}`. This is normal and proves that the API is running. The API defines no page at the root address, so add `/docs` to the address.
+
 
 ### Task 5: Call the API
 
@@ -814,31 +816,32 @@ In this task, you call the four endpoints from the test page in the order a real
 
 #### Search products
 
-1. On the test page at `http://127.0.0.1:8000/docs`, select the blue **GET /products** row to expand it.
+1. On the test page at **http://127.0.0.1:8000/docs**, select the blue **GET /products** row to expand it.
 
-    ![](media/image64.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image64.png)
 
-2. Select **Try it out** (top right of the expanded row).
+1. Select **Try it out** (top right of the expanded row).
 
-    ![](media/image65.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image65.png)
 
-3. In the **q** field, enter `headphnes`. Leave **limit** as 5.
+1. In the **q** field, enter `headphnes`. Leave **limit** as 5.
 
-    ![](media/image66.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image66.png)
 
-4. Select **Execute**, and then scroll down to **Response body**. You should see Wireless Headphones products at the top, even though the word is misspelled.
+1. Select **Execute**, and then scroll down to **Response body**. You should see Wireless Headphones products at the top, even though the word is misspelled.
 
-    ![](media/image67.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image67.png)
 
-    ![](media/image68.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image68.png)
+
 
 #### Create a return
 
 1. Expand **POST /returns**, and then select **Try it out**.
 
-    ![](media/image69.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image69.png)
 
-2. Replace the request body with the following:
+1. Replace the request body with the following:
 
     ```json
     {
@@ -847,23 +850,24 @@ In this task, you call the four endpoints from the test page in the order a real
     }
     ```
 
-    ![](media/image70.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image70.png)
 
-3. Select **Execute**. Note the `return_id` in the response and the status **requested** we will use it in the next step.
+1. Select **Execute**. Note the `return_id` in the response and the status **requested** we will use it in the next step.
 
-    ![](media/image71.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image71.png)
 
-    ![](media/image72.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image72.png)
+
 
 #### Approve the return
 
 1. Expand **POST /returns/{return_id}/decision**, and then select **Try it out**.
 
-    ![](media/image73.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image73.png)
 
-2. In the path field, enter your `return_id`.
+1. In the path field, enter your `return_id`.
 
-3. Use the following request body:
+1. Use the following request body:
 
     ```json
     {
@@ -872,31 +876,33 @@ In this task, you call the four endpoints from the test page in the order a real
     }
     ```
 
-    ![](media/image74.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image74.png)
 
-4. Select **Execute**. The status should be **approved**.
+1. Select **Execute**. The status should be **approved**.
 
-    ![](media/image75.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image75.png)
 
-    ![](media/image76.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image76.png)
 
-5. Select **Execute** again. This time you should get a **409** response with a message that the return is already approved.
+1. Select **Execute** again. This time you should get a **409** response with a message that the return is already approved.
 
-    ![](media/image77.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image77.png)
+
 
 #### Check the result
 
 1. Expand **GET /returns/{return_id}**, and then select **Try it out**.
 
-    ![](media/image78.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image78.png)
 
-2. Enter the same `return_id`, and then select **Execute**. The status should be **approved**.
+1. Enter the same `return_id`, and then select **Execute**. The status should be **approved**.
 
-    ![](media/image79.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image79.png)
 
-    ![](media/image80.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image80.png)
 
-    **Note:** If any call shows a 500 error, look at the PowerShell window that is running uvicorn. It prints the full error text, which usually points to a missing table or function from Exercises 1 to 3.
+    >[!Note] If any call shows a 500 error, look at the PowerShell window that is running uvicorn. It prints the full error text, which usually points to a missing table or function from Exercises 1 to 3.
+
 
 ### Task 6: Receive events from the database
 
@@ -910,7 +916,7 @@ The trigger from Exercise 3 sends a notification whenever a return is requested.
     $env:PGPASSWORD="Password@123!"
     ```
 
-2. Create a new python file named as **listener.py**, and then add the following code:
+1. Create a new python file named as `listener.py`, and then add the following code:
 
     ```python
     import os
@@ -928,22 +934,23 @@ The trigger from Exercise 3 sends a notification whenever a return is requested.
         print(f"New return requested: id={note.payload}")
     ```
 
-3. Run the listener:
+1. Run the listener:
 
     ```powershell
-    +++cd documents+++
-    +++python listener.py+++
+    cd documents
+    python listener.py
     ```
 
-4. With the API still running in another terminal, create a return again by using **POST /returns** on the test page. The listener prints the new return ID within a second. This is how a fulfillment or email service can react to returns without polling the table.
+1. With the API still running in another terminal, create a return again by using **POST /returns** on the test page. The listener prints the new return ID within a second. This is how a fulfillment or email service can react to returns without polling the table.
+
 
 #### Create a return
 
 1. Expand **POST /returns**, and then select **Try it out**.
 
-    ![](media/image69.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image69.png)
 
-2. Replace the request body with the following:
+1. Replace the request body with the following:
 
     ```json
     {
@@ -952,17 +959,18 @@ The trigger from Exercise 3 sends a notification whenever a return is requested.
     }
     ```
 
-    ![](media/image70.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image70.png)
 
-3. Select **Execute**.
+1. Select **Execute**.
 
-    ![](media/image71.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image71.png)
 
-    ![](media/image72.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image72.png)
 
     The API creates and decides returns, a duplicate decision returns 409, and the listener prints a notification for a new request.
 
-    ![](media/image81.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%207/media/image81.png)
+
 
 ## Summary
 

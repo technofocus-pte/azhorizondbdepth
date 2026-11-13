@@ -10,21 +10,16 @@ As Northstar prepares to modernize its manufacturing applications and introduce 
 
 As Northstar’s database engineer, you will deploy an Azure HorizonDB cluster, configure client connectivity, and apply a Delete resource lock to protect the cluster. You will then create an operations database, establish relationships between equipment and maintenance records, and perform SQL operations to retrieve and manage the data. By the end of this lab, you will have established the database foundation Northstar needs for its next stage of modernization.
 
-## Objectives
+### Objectives
 
 After you complete this lab, you will be able to:
-
 - Describe the core architecture of Azure HorizonDB.
-
 - Deploy an Azure HorizonDB cluster.
-
 - Protect the cluster from accidental deletion with a Delete resource lock.
-
 - Connect to HorizonDB by using psql and verify the session.
-
 - Create a database and two related tables with a foreign key.
-
 - Insert, query, join, update, and delete records by using SQL.
+
 
 ## Exercise 0: Azure HorizonDB at a glance(Read only)
 
@@ -47,48 +42,49 @@ Northstar developers cannot start building until a managed PostgreSQL environmen
 
 1. Open a web browser and go to +++https://portal.azure.com/+++.
 
-2. Sign in to the Azure portal with the following credentials:
+1. Sign in to the Azure portal with the following credentials:
 
-   - **Username:** +++@lab.CloudPortalCredential(User1).Username+++
+    - **Username:** +++@lab.CloudPortalCredential(User1).Username+++
+    - **TAP Token:** +++@lab.CloudPortalCredential(User1).AccessToken+++
 
-   - **TAP Token:** +++@lab.CloudPortalCredential(User1).AccessToken+++
+    ![A screenshot of a sign in box AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image1.png)
 
-   ![A screenshot of a sign in box AI-generated content may be incorrect.](media/image1.png)
+    ![A screenshot of a login screen AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image2.png)
 
-   ![A screenshot of a login screen AI-generated content may be incorrect.](media/image2.png)
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image3.png)
 
-   ![A screenshot of a computer AI-generated content may be incorrect.](media/image3.png)
 
-3. In the search box at the top of the page, enter +++Azure HorizonDB+++. Under **Services**, select **Azure HorizonDB**.
+1. In the search box at the top of the page, enter `Azure HorizonDB`. Under **Services**, select **Azure HorizonDB**.
 
-   ![](media/image4.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image4.png)
 
-4. Select **Create**.
+1. Select **Create**.
 
-   ![A screenshot of a computer AI-generated content may be incorrect.](media/image5.png)
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image5.png)
+
 
 ### Task 2: Configure the cluster
 
-On the **Basics** tab, enter the values in the following table. Leave all other settings at their defaults.
+1. On the **Basics** tab, enter the values in the following table. Leave all other settings at their defaults.
 
-| Setting | Value |
-| --- | --- |
-| Subscription | Your lab subscription |
-| Resource group | ResourceGroup1 |
-| Cluster name | northstar-hdb-@lab.LabInstance.Id |
-| Region | Central US |
-| PostgreSQL version | 17 |
-| vCores | 2 |
-| High availability | Disabled |
-| Authentication | PostgreSQL authentication |
-| Admin username | NorthstarAdmin |
-| Admin password | Password@123! |
+    | Setting | Value |
+    | --- | --- |
+    | Subscription | @lab.CloudSubscription.Name |
+    | Resource group | @lab.CloudResourceGroup(HorizonDB-RG).Name |
+    | Cluster name | `northstar-hdb-@lab.LabInstance.Id` |
+    | Region | @lab.CloudResourceGroup(HorizonDB-RG).Location |
+    | PostgreSQL version | 17 |
+    | vCores | 2 |
+    | High availability | Disabled |
+    | Authentication | PostgreSQL authentication |
+    | Admin username | +++NorthstarAdmin+++ |
+    | Admin password | +++Password@123!+++ |
+    
+    Select **Next**.
 
-Select **Next**.
-
-![](media/image6.png)
-
-![](media/image7.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image6.png)
+    
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image7.png)
 
 ### Task 3: Configure networking
 
@@ -96,75 +92,78 @@ Your psql client must be allowed to reach the cluster. You do this on the **Netw
 
 1. Confirm that the connectivity method is **Public access**.
 
-   ![](media/image8.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image8.png)
 
-2. Under **Firewall rules**, select **Allow public access from any Azure service within Azure to this cluster**.
+1. Under **Firewall rules**, select **Allow public access from any Azure service within Azure to this cluster**.
 
-   ![A screenshot of a computer AI-generated content may be incorrect.](media/image9.png)
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image9.png)
 
-3. Select **Add current client IP address** to add your current public IP address to the firewall rules.
+1. Select **Add current client IP address** to add your current public IP address to the firewall rules.
 
-   ![A screenshot of a computer AI-generated content may be incorrect.](media/image10.png)
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image10.png)
 
-   ![A screenshot of a computer AI-generated content may be incorrect.](media/image11.png)
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image11.png)
+
 
 ### Task 4: Deploy the cluster and copy the endpoint
 
 1. Select **Review + create**, review the summary, and then select **Create**.
 
-   ![A screenshot of a computer AI-generated content may be incorrect.](media/image12.png)
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image12.png)
 
-   ![](media/image13.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image13.png)
 
-2. Wait for the deployment to finish. This takes about 10 to 15 minutes.
+1. Wait for the deployment to finish. This takes about 10 to 15 minutes.
 
-   ![](media/image14.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image14.png)
 
-3. When the deployment completes, select **Go to resource group**.
+1. When the deployment completes, select **Go to resource group**.
 
-   ![](media/image15.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image15.png)
 
-4. Select the new HorizonDB cluster.
+1. Select the new HorizonDB cluster.
 
-   ![A screenshot of a computer AI-generated content may be incorrect.](media/image16.png)
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image16.png)
 
-5. On the **Overview** page, copy the **Primary endpoint** and paste it into Notepad. You use it in Exercise 3.
+1. On the **Overview** page, copy the **Primary endpoint** and paste it into Notepad. You use it in Exercise 3.
 
-   ![](media/image17.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image17.png)
 
-The cluster appears in **ResourceGroup1**, its status shows as available, and you have saved the primary endpoint. The database infrastructure is ready.
+    The cluster appears in **@lab.CloudResourceGroup(HorizonDB-RG).Name**, its status shows as available, and you have saved the primary endpoint. The database infrastructure is ready.
+
 
 ## Exercise 2: Protect the cluster against accidental deletion
 
 Deleting a database resource by mistake can disrupt applications and take hours to recover from. Azure resource locks add a safeguard at the management plane so that a cluster cannot be removed by accident. In this exercise, you add a **Delete** lock to the cluster and confirm that it is in place.
 
-> **Important:** A Delete lock protects the Azure resource from management-plane deletion. It does **not** stop SQL statements from changing or deleting records and tables inside the database.
+>[!Important] A Delete lock protects the Azure resource from management-plane deletion. It does **not** stop SQL statements from changing or deleting records and tables inside the database.
 
 1. On the cluster page, under **Settings** in the left navigation menu, select **Locks**.
 
-   ![](media/image18.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image18.png)
 
-2. Select **Add**.
+1. Select **Add**.
 
-   ![](media/image19.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image19.png)
 
-3. Enter the following values:
+1. Enter the following values:
 
-   | Setting | Value |
-   | --- | --- |
-   | Lock name | northstar-hdb-delete-lock |
-   | Lock type | Delete |
-   | Notes | Protect the Northstar HorizonDB cluster from accidental deletion during development. |
+    | Setting | Value |
+    | --- | --- |
+    | Lock name | `northstar-hdb-delete-lock` |
+    | Lock type | Delete |
+    | Notes | `Protect the Northstar HorizonDB cluster from accidental deletion during development.` |
 
-   ![](media/image20.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image20.png)
 
-4. Select **OK**.
+1. Select **OK**.
 
-5. Confirm that **northstar-hdb-delete-lock** appears in the list of locks.
+1. Confirm that **northstar-hdb-delete-lock** appears in the list of locks.
 
-![](media/image21.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image21.png)
 
-The lock is listed with the type **Delete**.
+    The lock is listed with the type **Delete**.
+
 
 ## Exercise 3: Connect to HorizonDB and inspect the session
 
@@ -172,47 +171,42 @@ With the cluster deployed and protected, you now connect to it as a client would
 
 1. In the Azure portal toolbar, select **Cloud Shell**, and then select **Bash**.
 
-   ![A screenshot of a computer AI-generated content may be incorrect.](media/image22.png)
+    ![A screenshot of a computer AI-generated content may be incorrect.](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image22.png)
 
-2. If prompted, select **No storage account required**, choose your subscription, and then select **Apply**. Wait for Cloud Shell to initialize.
+1. If prompted, select **No storage account required**, choose your subscription, and then select **Apply**. Wait for Cloud Shell to initialize.
 
-   ![](media/image23.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image23.png)
 
-3. Run the following command to connect. Replace &lt;horizon-endpoint> with the primary endpoint you saved in Notepad.
+1. Run the following command to connect. Replace <horizon-endpoint> with the primary endpoint you saved in Notepad.
 
-   ```
-   psql "host=<horizon-endpoint> port=5432 dbname=postgres user=NorthstarAdmin sslmode=require"
-   ```
+    `psql "host=<horizon-endpoint> port=5432 dbname=postgres user=NorthstarAdmin sslmode=require"`
 
-   For example:
+    For example:
 
-   ```
-   psql "host=northstar66681805.c75a9b557f60.centralus.horizondb.azure.com port=5432 dbname=postgres user=NorthstarAdmin sslmode=require"
-   ```
+    `psql "host=northstar66681805.c75a9b557f60.centralus.horizondb.azure.com port=5432 dbname=postgres user=NorthstarAdmin sslmode=require"`
 
-   > **Tip:** Do not add spaces after host= or user=. Extra spaces cause the connection to fail.
+    >[!Tip] Do not add spaces after host= or user=. Extra spaces cause the connection to fail.
 
-   ![](media/image24.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image24.png)
 
-4. When prompted, enter the password +++Password@123!+++. The password does not appear as you type.
+1. When prompted, enter the password +++Password@123!+++. The password does not appear as you type.
 
-   ![](media/image25.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image25.png)
 
-5. Confirm that the connection succeeds and the postgres=> prompt appears.
+1. Confirm that the connection succeeds and the postgres=> prompt appears.
 
-   ![](media/image26.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image26.png)
 
-6. Check the current database and user:
+1. Check the current database and user:
 
-   ```
-   SELECT current_database(), current_user;
-   ```
+    `SELECT current_database(), current_user;`
 
-   **Expected result:** The query returns postgres and NorthstarAdmin.
+    **Expected result:** The query returns postgres and NorthstarAdmin.
 
-![](media/image27.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image27.png)
 
-> **Why this matters:** You connect to the default postgres database first because it always exists. In the next exercise you create a dedicated database for Northstar's data instead of storing it in postgres.
+    **Why this matters:** You connect to the default postgres database first because it always exists. In the next exercise you create a dedicated database for Northstar's data instead of storing it in postgres.
+
 
 ## Exercise 4: Create and manage the Northstar operations database
 
@@ -222,31 +216,26 @@ Northstar needs its own database to track equipment and maintenance requests. In
 
 1. Create a dedicated database for the Northstar application:
 
-   ```
-   CREATE DATABASE northstar_ops;
-   ```
+    `CREATE DATABASE northstar_ops;`
 
-   ![](media/image28.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image28.png)
 
-2. Switch to the new database:
+1. Switch to the new database:
 
-   ```
-   \c northstar_ops
-   ```
+    `\c northstar_ops`
 
-   ![](media/image29.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image29.png)
 
-3. Verify the active database:
+1. Verify the active database:
 
-   ```
-   SELECT current_database();
-   ```
+    `SELECT current_database();`
 
-   ![](media/image30.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image30.png)
 
-   **Expected result:** The query returns northstar_ops.
+    **Expected result:** The query returns northstar_ops.
 
-   ![](media/image31.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image31.png)
+
 
 ### Task 2: Create the equipment table
 
@@ -254,27 +243,26 @@ The equipment table stores one row for each machine. The primary key identifies 
 
 1. Create the table:
 
-   ```
-   CREATE TABLE equipment (
-       equipment_id SERIAL PRIMARY KEY,
-       equipment_name VARCHAR(100) NOT NULL,
-       plant_name VARCHAR(100) NOT NULL,
-       equipment_type VARCHAR(50) NOT NULL,
-       status VARCHAR(30) NOT NULL
-   );
-   ```
+    ```
+    CREATE TABLE equipment (
+        equipment_id SERIAL PRIMARY KEY,
+        equipment_name VARCHAR(100) NOT NULL,
+        plant_name VARCHAR(100) NOT NULL,
+        equipment_type VARCHAR(50) NOT NULL,
+        status VARCHAR(30) NOT NULL
+    );
+    ```
 
-   ![](media/image32.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image32.png)
 
-2. Verify that the table exists:
+1. Verify that the table exists:
 
-   ```
-   \dt
-   ```
+    `\dt`
 
-   **Expected result:** The list shows the equipment table.
+    **Expected result:** The list shows the equipment table.
 
-   ![](media/image33.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image33.png)
+
 
 ### Task 3: Create the maintenance request table
 
@@ -282,31 +270,30 @@ The service_requests table stores maintenance requests. A foreign key links each
 
 1. Create the table:
 
-   ```
-   CREATE TABLE service_requests (
-       request_id SERIAL PRIMARY KEY,
-       equipment_id INT NOT NULL
-           REFERENCES equipment(equipment_id),
-       issue_description TEXT NOT NULL,
-       priority VARCHAR(20) NOT NULL,
-       request_status VARCHAR(30) NOT NULL DEFAULT 'Open',
-       created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
-   );
-   ```
+    ```
+    CREATE TABLE service_requests (
+        request_id SERIAL PRIMARY KEY,
+        equipment_id INT NOT NULL
+            REFERENCES equipment(equipment_id),
+        issue_description TEXT NOT NULL,
+        priority VARCHAR(20) NOT NULL,
+        request_status VARCHAR(30) NOT NULL DEFAULT 'Open',
+        created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+    ```
 
-   ![](media/image34.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image34.png)
 
-2. Inspect the table definition:
+1. Inspect the table definition:
 
-   ```
-   \d service_requests
-   ```
+    `\d service_requests`
 
-   ![](media/image35.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image35.png)
 
-   **Expected result:** The equipment_id column appears, and a foreign-key constraint references equipment(equipment_id).
+    **Expected result:** The equipment_id column appears, and a foreign-key constraint references equipment(equipment_id).
 
-   ![](media/image36.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image36.png)
+
 
 ### Task 4: Insert equipment and maintenance data
 
@@ -314,44 +301,41 @@ Add sample records that represent Northstar's plants in Illinois, Texas, and Ohi
 
 1. Insert the equipment records:
 
-   ```
-   INSERT INTO equipment
-       (equipment_name, plant_name, equipment_type, status)
-   VALUES
-       ('CNC Machine 01', 'Chicago Plant, Illinois', 'CNC', 'Operational'),
-       ('Hydraulic Press 02', 'Dallas Plant, Texas', 'Press', 'Maintenance'),
-       ('Robotic Welder 03', 'Columbus Plant, Ohio', 'Robot', 'Operational');
-   ```
+    ```
+    INSERT INTO equipment
+        (equipment_name, plant_name, equipment_type, status)
+    VALUES
+        ('CNC Machine 01', 'Chicago Plant, Illinois', 'CNC', 'Operational'),
+        ('Hydraulic Press 02', 'Dallas Plant, Texas', 'Press', 'Maintenance'),
+        ('Robotic Welder 03', 'Columbus Plant, Ohio', 'Robot', 'Operational');
+    ```
 
-   ![](media/image37.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image37.png)
 
-2. Insert the maintenance requests:
+1. Insert the maintenance requests:
 
-   ```
-   INSERT INTO service_requests
-       (equipment_id, issue_description, priority, request_status)
-   VALUES
-       (1, 'Unusual vibration detected during operation', 'High', 'Open'),
-       (2, 'Hydraulic pressure below the expected range', 'Critical', 'In Progress');
-   ```
+    ```
+    INSERT INTO service_requests
+        (equipment_id, issue_description, priority, request_status)
+    VALUES
+        (1, 'Unusual vibration detected during operation', 'High', 'Open'),
+        (2, 'Hydraulic pressure below the expected range', 'Critical', 'In Progress');
+    ```
 
-   ![](media/image38.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image38.png)
 
-3. Verify the equipment records:
+1. Verify the equipment records:
 
-   ```
-   SELECT * FROM equipment ORDER BY equipment_id;
-   ```
+    `SELECT * FROM equipment ORDER BY equipment_id;`
 
-   ![](media/image39.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image39.png)
 
-4. Verify the maintenance requests:
+1. Verify the maintenance requests:
 
-   ```
-   SELECT * FROM service_requests ORDER BY request_id;
-   ```
+    `SELECT * FROM service_requests ORDER BY request_id;`
 
-   ![](media/image40.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image40.png)
+
 
 ### Task 5: Join equipment with maintenance requests
 
@@ -359,27 +343,28 @@ Business users rarely want raw tables. They want to know which machine has which
 
 1. Run the following query:
 
-   ```
-   SELECT
-       e.equipment_name,
-       e.plant_name,
-       e.status AS equipment_status,
-       s.issue_description,
-       s.priority,
-       s.request_status
-   FROM equipment AS e
-   JOIN service_requests AS s
-       ON e.equipment_id = s.equipment_id
-   ORDER BY s.priority;
-   ```
+    ```
+    SELECT
+        e.equipment_name,
+        e.plant_name,
+        e.status AS equipment_status,
+        s.issue_description,
+        s.priority,
+        s.request_status
+    FROM equipment AS e
+    JOIN service_requests AS s
+        ON e.equipment_id = s.equipment_id
+    ORDER BY s.priority;
+    ```
 
-   ![](media/image41.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image41.png)
 
-   **Expected result:** Two rows that combine equipment details with the related maintenance request. Rows are sorted alphabetically by priority, so Critical appears before High.
+    **Expected result:** Two rows that combine equipment details with the related maintenance request. Rows are sorted alphabetically by priority, so Critical appears before High.
 
-   ![](media/image42.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image42.png)
 
-   > **Note:** Robotic Welder 03 does not appear because it has no maintenance request. A standard JOIN returns only rows that match in both tables.
+    >[!Note] Robotic Welder 03 does not appear because it has no maintenance request. A standard JOIN returns only rows that match in both tables.
+
 
 ### Task 6: Update a maintenance request
 
@@ -387,30 +372,31 @@ A technician has fixed the vibration problem on the CNC machine. Update the requ
 
 1. Update the request:
 
-   ```
-   UPDATE service_requests
-   SET request_status = 'Resolved'
-   WHERE request_id = 1;
-   ```
+    ```
+    UPDATE service_requests
+    SET request_status = 'Resolved'
+    WHERE request_id = 1;
+    ```
 
-   ![](media/image43.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image43.png)
 
-2. Verify the update:
+1. Verify the update:
 
-   ```
-   SELECT
-       request_id,
-       issue_description,
-       request_status
-   FROM service_requests
-   WHERE request_id = 1;
-   ```
+    ```
+    SELECT
+        request_id,
+        issue_description,
+        request_status
+    FROM service_requests
+    WHERE request_id = 1;
+    ```
 
-   ![](media/image44.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image44.png)
 
-   **Expected result:** Request 1 has the status Resolved.
+    **Expected result:** Request 1 has the status Resolved.
 
-   ![](media/image45.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image45.png)
+
 
 ### Task 7: Delete a sample maintenance request
 
@@ -418,35 +404,36 @@ Now practice removing a record. You delete the second sample request and then co
 
 1. Delete the request:
 
-   ```
-   DELETE FROM service_requests
-   WHERE request_id = 2;
-   ```
+    ```
+    DELETE FROM service_requests
+    WHERE request_id = 2;
+    ```
 
-   ![](media/image46.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image46.png)
 
-2. Verify the remaining request count:
+1. Verify the remaining request count:
 
-   ```
-   SELECT COUNT(*) AS remaining_requests
-   FROM service_requests;
-   ```
+    ```
+    SELECT COUNT(*) AS remaining_requests
+    FROM service_requests;
+    ```
 
-   ![](media/image47.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image47.png)
 
-   **Expected result:** remaining_requests is 1.
+    **Expected result:** remaining_requests is 1.
 
-   *(Screenshot placeholder: count result)*
+    *(Screenshot placeholder: count result)*
 
-> **Note:** This statement deletes a row from a table. It does not delete the HorizonDB cluster. The Delete lock you configured in Exercise 2 protects the Azure resource, not individual rows or tables.
+    >[!Note] This statement deletes a row from a table. It does not delete the HorizonDB cluster. The Delete lock you configured in Exercise 2 protects the Azure resource, not individual rows or tables.
 
-![](media/image48.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image48.png)
 
-3. Type \\q to exit psql when you finish.
+1. Type `\q` to exit psql when you finish.
 
-   ![](media/image49.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image49.png)
 
-## Exercise 5:Cleanup Resources
+
+## Exercise 5: Cleanup Resources
 
 ### Task 1: Remove the resource lock
 
@@ -454,21 +441,22 @@ A Delete lock blocks deletion until an authorized user removes it. Remove the lo
 
 1. Open the HorizonDB cluster in the Azure portal.
 
-2. Select **Settings** > **Locks**.
+1. Select **Settings** > **Locks**.
 
-   ![](media/image50.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image50.png)
 
-3. Select **northstar-hdb-delete-lock**, and then select **Delete** to remove the lock.
+1. Select **northstar-hdb-delete-lock**, and then select **Delete** to remove the lock.
 
-   ![](media/image51.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image51.png)
 
-4. Select Delete.
+1. Select Delete.
 
-   ![](media/image52.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image52.png)
 
-5. Confirm that the lock no longer appears in the list.
+1. Confirm that the lock no longer appears in the list.
 
-   ![](media/image53.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image53.png)
+
 
 ### Task 2: Delete the cluster
 
@@ -476,13 +464,14 @@ Delete the cluster only if you are authorized to do so and the environment is de
 
 1. Open the cluster's **Overview** page.
 
-2. Select **Delete**.
+1. Select **Delete**.
 
-   ![](media/image54.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image54.png)
 
-3. Review the resource details and then select Delete to permanently delete the Cluster.
+1. Review the resource details and then select Delete to permanently delete the Cluster.
 
-   ![](media/image55.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%201/media/image55.png)
+
 
 ## Lab summary
 

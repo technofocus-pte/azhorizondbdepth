@@ -1,4 +1,6 @@
-# Lab 4 — Build a GraphRAG Legal Research Agent on Azure HorizonDB
+# Lab 4: Build a GraphRAG Legal Research Agent on Azure HorizonDB
+
+### Estimate duration: 60 min
 
 **Estimate duration: 60 min**
 
@@ -513,9 +515,10 @@ UPDATE legal.documents
 SET embedding = legal.embed(title || '. ' || content)
 WHERE embedding IS NULL;
 
-SELECT COUNT(*) AS total_docs, COUNT(embedding) AS docs_with_embeddings
-FROM legal.documents;
-```
+    ```sql
+    UPDATE legal.documents
+    SET embedding = legal.embed(title || '. ' || content)
+    WHERE embedding IS NULL;
 
 **Expected result:** 12 and 12. If the counts differ, check Task 1 and your model registration before you continue.
 
@@ -523,32 +526,34 @@ FROM legal.documents;
 
 ### Task 4: Build the citation graph
 
-The graph holds only document IDs and CITES edges (an edge from A to B means A cites B). The relational table stays the source of truth for the text. Run the CREATE statement once, because a second run creates duplicates.
+1. The graph holds only document IDs and CITES edges (an edge from A to B means A cites B). The relational table stays the source of truth for the text. Run the CREATE statement once, because a second run creates duplicates.
+
+    ```sql
+    SET search_path = ag_catalog, "$user", public;
+
+    SELECT create_graph('legal_graph');
 
 ```sql
 SET search_path = ag_catalog, "$user", public;
 
-SELECT create_graph('legal_graph');
+        (c2)-[:CITES]->(c1),
+        (c3)-[:CITES]->(c1),
+        (c4)-[:CITES]->(c2),
+        (c5)-[:CITES]->(c2), (c5)-[:CITES]->(c3),
+        (c6)-[:CITES]->(c5), (c6)-[:CITES]->(c4),
 
-SELECT * FROM cypher('legal_graph', $$
-    CREATE
-      (c1:Document {doc_id: 'CASE-001'}), (c2:Document {doc_id: 'CASE-002'}),
-      (c3:Document {doc_id: 'CASE-003'}), (c4:Document {doc_id: 'CASE-004'}),
-      (c5:Document {doc_id: 'CASE-005'}), (c6:Document {doc_id: 'CASE-006'}),
-      (m1:Document {doc_id: 'MEMO-001'}), (m2:Document {doc_id: 'MEMO-002'}),
-      (m3:Document {doc_id: 'MEMO-003'}),
-      (n1:Document {doc_id: 'NOTE-001'}), (n2:Document {doc_id: 'NOTE-002'}),
-      (n3:Document {doc_id: 'NOTE-003'}),
+        (m1)-[:CITES]->(c6), (m1)-[:CITES]->(c5), (m1)-[:CITES]->(c1),
+        (m2)-[:CITES]->(c2), (m2)-[:CITES]->(c3),
+        (m3)-[:CITES]->(c4),
 
-      (c2)-[:CITES]->(c1),
-      (c3)-[:CITES]->(c1),
-      (c4)-[:CITES]->(c2),
-      (c5)-[:CITES]->(c2), (c5)-[:CITES]->(c3),
-      (c6)-[:CITES]->(c5), (c6)-[:CITES]->(c4),
+        (n1)-[:CITES]->(m1), (n1)-[:CITES]->(c2), (n1)-[:CITES]->(c6),
+        (n2)-[:CITES]->(c3), (n2)-[:CITES]->(m2),
+        (n3)-[:CITES]->(c6), (n3)-[:CITES]->(m1)
+        RETURN c1
+    $$) AS (result agtype);
+    ```
 
-      (m1)-[:CITES]->(c6), (m1)-[:CITES]->(c5), (m1)-[:CITES]->(c1),
-      (m2)-[:CITES]->(c2), (m2)-[:CITES]->(c3),
-      (m3)-[:CITES]->(c4),
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image76.png)
 
       (n1)-[:CITES]->(m1), (n1)-[:CITES]->(c2), (n1)-[:CITES]->(c6),
       (n2)-[:CITES]->(c3), (n2)-[:CITES]->(m2),
@@ -653,7 +658,7 @@ SELECT * FROM legal.related_docs('CASE-002', 4);
 
 ![](./media/image82.png)
 
-### Task 4: Combine both steps in one function
+    `SELECT * FROM legal.related_docs('CASE-002', 4);`
 
 The vector hit is the starting point, and the graph supplies the connected authority. No document ID is typed by hand.
 
@@ -677,8 +682,7 @@ AS $$
     FROM seed AS s CROSS JOIN LATERAL legal.related_docs(s.doc_id, p_expand) AS r;
 $$;
 
-SELECT * FROM legal.graphrag_retrieve('Can a court narrow an overbroad non-compete instead of striking it down?');
-```
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image82.png)
 
 **Expected result:** CASE-002 found by vector, then CASE-001, CASE-004 and CASE-005 found by graph. The text of the case, the authority it rests on, and the cases that applied it are now available as evidence.
 
@@ -686,7 +690,7 @@ SELECT * FROM legal.graphrag_retrieve('Can a court narrow an overbroad non-compe
 
 > **Checkpoint:** You have a SQL-only GraphRAG retrieval flow. Next, an agent chooses these steps for itself.
 
-## Exercise 3: Build the legal research agent 
+## Exercise 3: Build the legal research agent
 
 The agent has four tools. The model picks one at a time by replying with a small JSON message, the Python program runs the tool against HorizonDB, and the result goes back to the model. The model calls go through legal.llm from Exercise 1, which uses the bring-your-own chat model you registered. The Python program never holds a model key. It only needs the database connection.
 

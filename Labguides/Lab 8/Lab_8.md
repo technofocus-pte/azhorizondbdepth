@@ -10,19 +10,15 @@ CartWise is a fast-growing online retailer that sells home and lifestyle product
 
 **The solution.** CartWise needs an operational playbook for HorizonDB. You will play the role of the on-call engineer and build it end to end. You will establish a monitoring baseline and an alert in Azure Monitor, use pg_stat_statements to find the queries that consume the most time, fix them with the right indexes and prove the improvement with before-and-after numbers, diagnose a blocked session with live activity views, and keep tables healthy with pg_buffercache and pgstattuple. By the end of the lab, a slow page is no longer a mystery. It is a repeatable process: detect, locate, fix and verify.
 
-## Objectives
+### Objectives
 
 After you complete this lab, you will be able to:
-
 - Explore Azure HorizonDB platform metrics and create a metric alert in Azure Monitor.
-
 - Identify slow and high-volume queries by using pg_stat_statements, and confirm a fix with before-and-after numbers.
-
 - Find and resolve a blocking session by using pg_stat_activity.
-
 - Inspect the buffer cache by using pg_buffercache, measure table bloat by using pgstattuple, and remove it by running vacuum.
-
 - Verify the shared cluster from Lab 7, including its extensions and sample data, before you start troubleshooting.
+
 
 ## Exercise 0: Verify the shared cluster
 
@@ -30,9 +26,9 @@ In this exercise, you confirm that the cartwise database from Lab 7 is available
 
 1. In Visual Studio Code, connect to the **cartwise** database that you created in Lab 7.
 
-    ![](media/image1.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image1.png)
 
-2. Open a new query window and run the following queries one at a time:
+1. Open a new query window and run the following queries one at a time:
 
     ```sql
     SELECT current_database();
@@ -45,15 +41,14 @@ In this exercise, you confirm that the cartwise database from Lab 7 is available
            (SELECT count(*) FROM retail.returns) AS returns;
     ```
 
-3. Review the results. Confirm that the database meets all of the following conditions:
+1. Review the results. Confirm that the database meets all of the following conditions:
 
     - The `shared_preload_libraries` value includes **pg_cron** and **pg_stat_statements**.
-
     - The extension list includes **pg_stat_statements**, **pg_buffercache** and **pgstattuple**.
-
     - The orders and returns tables both contain rows.
 
-    ![](media/image2.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image2.png)
+
 
 ## Exercise 1: Build the order-events workload
 
@@ -88,11 +83,12 @@ In this task, you create the order_events table and fill it with one million sam
     SELECT pg_size_pretty(pg_total_relation_size('retail.order_events')) AS table_size;
     ```
 
-    **Note:** The load can take up to a minute on 2 vCores. Wait for all statements to finish before you continue.
+    >[!Note] The load can take up to a minute on 2 vCores. Wait for all statements to finish before you continue.
 
-2. Verify that the row count is 1,000,000 and note the table size.
+1. Verify that the row count is 1,000,000 and note the table size.
 
-    ![](media/image3.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image3.png)
+
 
 ### Task 2: Create the workload script
 
@@ -100,11 +96,11 @@ In this task, you create a small Python script that behaves like the CartWise ap
 
 1. In Visual Studio Code, select **File explorer** \> **New file** \> **Python file**.
 
-    ![](media/image4.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image4.png)
 
-    ![](media/image5.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image5.png)
 
-2. Enter the following code in the empty file, and then save it as **workload.py in documents folder**:
+1. Enter the following code in the empty file, and then save it as `workload.py` in **documents folder**:
 
     ```python
     import os, random, time
@@ -135,7 +131,8 @@ In this task, you create a small Python script that behaves like the CartWise ap
     conn.close()
     ```
 
-    ![](media/image6.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image6.png)
+
 
 ### Task 3: Reset statistics and generate the first load
 
@@ -143,25 +140,21 @@ In this task, you clear the query statistics so that your baseline contains only
 
 1. In Visual Studio Code, run the following statement in the query window to reset the query statistics:
 
-    ```sql
-    SELECT pg_stat_statements_reset();
-    ```
+    `SELECT pg_stat_statements_reset();`
 
-    ![](media/image7.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image7.png)
 
-2. Select three dots(…)-\>Terminal-\>new terminal.
+1. Select three dots(…)-\>Terminal-\>new terminal.
 
-    ![](media/image8.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image8.png)
 
-3. In the terminal, navigate to the folder that contains the file.
+1. In the terminal, navigate to the folder that contains the file.
 
-    ```powershell
-    +++cd documents+++
-    ```
+    `cd documents`
 
-    ![](media/image9.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image9.png)
 
-4. Set the connection details for the HorizonDB cluster by running the following commands:
+1. Set the connection details for the HorizonDB cluster by running the following commands:
 
     ```powershell
     $env:PGHOST:"<cluster-primary-endpoint>"
@@ -169,19 +162,18 @@ In this task, you clear the query statistics so that your baseline contains only
     $env:PGPASSWORD="Password@123!"
     ```
 
-    **Note:** Replace `<cluster-primary-endpoint>` with the primary endpoint of your HorizonDB cluster. You can find it on the cluster **Overview** page in the Azure portal.
+    >[!Note] Replace `<cluster-primary-endpoint>` with the primary endpoint of your HorizonDB cluster. You can find it on the cluster **Overview** page in the Azure portal.
 
-    ![](media/image10.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image10.png)
 
-5. Run the workload by using the following command:
+1. Run the workload by using the following command:
 
-    ```powershell
-    python workload.py
-    ```
+    `python workload.py`
 
-    ![](media/image11.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image11.png)
 
-6. Wait for the script to print the **Done in** message, and then note the milliseconds per iteration. This is your baseline.
+1. Wait for the script to print the **Done in** message, and then note the milliseconds per iteration. This is your baseline.
+
 
 ## Exercise 2: Azure Monitor metrics and an alert
 
@@ -193,55 +185,56 @@ In this task, you create four metric charts: CPU, memory, connections and storag
 
 1. In the Azure portal, open your HorizonDB cluster: **cartwise-hdb-lab**.
 
-2. In the left pane, under **Monitoring**, select **Metrics**.
+1. In the left pane, under **Monitoring**, select **Metrics**.
 
-    ![](media/image12.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image12.png)
 
-3. Select **Local Time**, set **Time range** to **Last 30 minutes**, and then select **Apply**.
+1. Select **Local Time**, set **Time range** to **Last 30 minutes**, and then select **Apply**.
 
-    ![](media/image13.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image13.png)
 
-4. To add a chart for CPU, open the **Metric** drop-down list on the default chart, and then select **CPU utilization**.
+1. To add a chart for CPU, open the **Metric** drop-down list on the default chart, and then select **CPU utilization**.
 
-    ![](media/image14.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image14.png)
 
-    ![](media/image15.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image15.png)
 
-5. Select **+ New chart** to add a chart for memory. In the **Metric** drop-down list, browse to and select the memory metric.
+1. Select **+ New chart** to add a chart for memory. In the **Metric** drop-down list, browse to and select the memory metric.
 
-    ![](media/image16.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image16.png)
 
-    ![](media/image17.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image17.png)
 
-    ![](media/image18.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image18.png)
 
-6. Select **+ New chart** again to add a chart for connections. In the **Metric** drop-down list, browse to and select **Active connections**.
+1. Select **+ New chart** again to add a chart for connections. In the **Metric** drop-down list, browse to and select **Active connections**.
 
-    ![](media/image19.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image19.png)
 
-    ![](media/image20.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image20.png)
 
-    ![](media/image21.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image21.png)
 
-7. Select **+ New chart** again to add a chart for storage. In the **Metric** drop-down list, browse to and select **Storage used**.
+1. Select **+ New chart** again to add a chart for storage. In the **Metric** drop-down list, browse to and select **Storage used**.
 
-    ![](media/image22.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image22.png)
 
-    ![](media/image23.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image23.png)
 
-    ![](media/image24.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image24.png)
 
-8. Return to Visual Studio Code, run `+++python workload.py+++` again, and then switch back to the Azure portal. Observe how the charts react while the workload runs.
+1. Return to Visual Studio Code, run `python workload.py` again, and then switch back to the Azure portal. Observe how the charts react while the workload runs.
 
-    ![](media/image25.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image25.png)
 
-    ![](media/image26.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image26.png)
 
-    ![](media/image27.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image27.png)
 
-    ![](media/image28.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image28.png)
 
-    **Note:** The values you see might differ from the screenshots in this lab. This is expected, because they depend on the timing of your workload.
+    >[!Note] The values you see might differ from the screenshots in this lab. This is expected, because they depend on the timing of your workload.
+
 
 ### Task 2: Check the activity log
 
@@ -249,25 +242,24 @@ In this task, you use the Logs experience to see whether recent connection probl
 
 1. In the left pane, under **Monitoring**, select **Logs**.
 
-    ![](media/image29.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image29.png)
 
-    **Note:** Close any pop-up windows that appear.
+    >[!Note] Close any pop-up windows that appear.
 
-2. In the query assistant box, enter the following prompt, and then press **Enter**:
+1. In the query assistant box, enter the following prompt, and then press **Enter**:
 
-    ```powershell
-    +++Show recent errors+++
-    ```
+    `Show recent errors`
 
-    Or you can select from the existing prompt.
+    >[!Note] Or you can select from the existing prompt.
 
-    ![](media/image30.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image30.png)
 
-3. Review the summary. It shows how many connections failed or succeeded.
+1. Review the summary. It shows how many connections failed or succeeded.
 
-    ![](media/image31.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image31.png)
 
-    **Note:** The output is generated by AI, so it can vary from run to run.
+    >[!Note] The output is generated by AI, so it can vary from run to run.
+
 
 ### Task 3: Create an alert rule
 
@@ -275,77 +267,76 @@ In this task, you create an alert that emails the on-call engineer when CPU stay
 
 1. In the left pane, under **Monitoring**, select **Alerts**, and then select **Create** \> **Alert rule**.
 
-    ![](media/image32.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image32.png)
 
-2. On the **Condition** tab, open the **Signal name** drop-down list, and then select **See all signals**.
+1. On the **Condition** tab, open the **Signal name** drop-down list, and then select **See all signals**.
 
-    ![](media/image33.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image33.png)
 
-3. In the search box, enter `+++CPU+++`, select the **CPU Utilization** metric from the results, and then select **Apply**.
+1. In the search box, enter `CPU`, select the **CPU Utilization** metric from the results, and then select **Apply**.
 
-    ![](media/image34.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image34.png)
 
-4. Configure the alert logic with the following values, and then select **Next**:
+1. Configure the alert logic with the following values, and then select **Next**:
 
     - **Threshold:** Greater than 30 percent
-
     - **Aggregation type:** Average
-
     - **Check every:** 1 minute
-
     - **Lookback period:** 5 minutes
 
-    **Note:** The low threshold is for this lab only. A production alert would normally use a value near 80 percent.
+    >[!Note] The low threshold is for this lab only. A production alert would normally use a value near 80 percent.
 
-    ![](media/image35.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image35.png)
 
-    ![](media/image36.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image36.png)
 
-5. On the **Actions** tab, select **Use action groups** and then select **+Create action group**.
 
-    ![](media/image37.png)
+1. On the **Actions** tab, select **Use action groups** and then select **+Create action group**.
 
-    ![](media/image38.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image37.png)
 
-6. On the **Basics** tab, enter the following values and leave the remaining values at their defaults, and then select **Next**:
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image38.png)
 
-    - **Action group name:** cartwise-oncall
+1. On the **Basics** tab, enter the following values and leave the remaining values at their defaults, and then select **Next**:
 
-    - **Display name:** cartwise
+    - **Action group name:** `cartwise-oncall`
+    - **Display name:** `cartwise`
 
-    ![](media/image39.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image39.png)
 
-7. On the **Notifications** tab, you create a notification that sends an email to your own address. In the **Notification type** drop-down list, select **Email/SMS message/Push/Voice**.
 
-    ![](media/image40.png)
+1. On the **Notifications** tab, you create a notification that sends an email to your own address. In the **Notification type** drop-down list, select **Email/SMS message/Push/Voice**.
 
-8. In the pane that opens, select **Email**, and then enter the following user name to receive the alert email: `+++@lab.CloudPortalCredential(User1).Username+++`. Select **OK**.
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image40.png)
 
-    ![](media/image41.png)
+1. In the pane that opens, select **Email**, and then enter the following user name to receive the alert email: +++@lab.CloudPortalCredential(User1).Username+++. Select **OK**.
 
-9. Enter a username for the notification, and then select **Review+create**.
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image41.png)
 
-    ![](media/image42.png)
+1. Enter a username for the notification, and then select **Review+create**.
 
-10. Select Create.
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image42.png)
 
-    ![](media/image43.png)
+1. Select Create.
 
-11. Your action group is created.
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image43.png)
 
-    ![](media/image44.png)
+1. Your action group is created.
 
-12. Back on the alert rule wizard, select **Next** until you reach the **Details** tab. For **Alert rule name**, enter `+++cartwise-high-cpu+++`, and then select **Review + create**.
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image44.png)
 
-    ![](media/image45.png)
+1. Back on the alert rule wizard, select **Next** until you reach the **Details** tab. For **Alert rule name**, enter `cartwise-high-cpu`, and then select **Review + create**.
 
-13. Select **Create**.
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image45.png)
 
-    ![](media/image46.png)
+1. Select **Create**.
 
-    The rule appears under **Alert rules**. Whether it fires depends on how hard your workload pushes the cluster, and firing is a bonus rather than a requirement. If it fires, the email and the alert entry show how the on-call engineer would be notified.
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image46.png)
 
-    ![](media/image47.png)
+    >[!Note] The rule appears under **Alert rules**. Whether it fires depends on how hard your workload pushes the cluster, and firing is a bonus rather than a requirement. If it fires, the email and the alert entry show how the on-call engineer would be notified.
+
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image47.png)
+
 
 ## Exercise 3: Find and fix slow queries
 
@@ -370,11 +361,12 @@ In this task, you rank the statements that touch order_events by total execution
     LIMIT 5;
     ```
 
-2. Confirm that both workload queries appear near the top of the results, and then record the `mean_ms` value for each.
+1. Confirm that both workload queries appear near the top of the results, and then record the `mean_ms` value for each.
 
-    ![](media/image48.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image48.png)
 
-    **Note:** pg_stat_statements groups statements by shape. The tracking lookup therefore appears once, with `$1` in place of the order number, no matter how many different orders were queried.
+    >[!Note] pg_stat_statements groups statements by shape. The tracking lookup therefore appears once, with `$1` in place of the order number, no matter how many different orders were queried.
+
 
 ### Task 2: Look at the query plans
 
@@ -392,11 +384,12 @@ In this task, you use EXPLAIN to see how PostgreSQL runs each query. The plan sh
     WHERE order_id = 1234 ORDER BY created_at;
     ```
 
-    ![](media/image49.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image49.png)
 
-2. Review both plans. Each plan shows a **Seq Scan** that reads the whole table. This is the root cause of the slow page. Note the execution time and the buffer counts for each plan.
+1. Review both plans. Each plan shows a **Seq Scan** that reads the whole table. This is the root cause of the slow page. Note the execution time and the buffer counts for each plan.
 
-    ![](media/image50.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image50.png)
+
 
 ### Task 3: Add the right indexes
 
@@ -414,17 +407,18 @@ In this task, you create one index for each query pattern. You use `CONCURRENTLY
     ANALYZE retail.order_events;
     ```
 
-    ![](media/image51.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image51.png)
 
-    ![](media/image52.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image52.png)
 
-    ![](media/image53.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image53.png)
 
-2. Run both `EXPLAIN (ANALYZE, BUFFERS)` statements from Task 2 again. You should now see index scans, much lower execution times and lower buffer counts.
+1. Run both `EXPLAIN (ANALYZE, BUFFERS)` statements from Task 2 again. You should now see index scans, much lower execution times and lower buffer counts.
 
-    ![](media/image54.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image54.png)
 
-    ![](media/image55.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image55.png)
+
 
 ### Task 4: Prove the fix under load
 
@@ -432,33 +426,27 @@ In this task, you rerun the workload and compare the results with your baseline.
 
 1. In the query window, reset the statistics:
 
-    ```sql
-    SELECT pg_stat_statements_reset();
-    ```
+    `SELECT pg_stat_statements_reset();`
 
-    ![](media/image56.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image56.png)
 
-2. In the terminal, run the workload again:
+1. In the terminal, run the workload again:
 
-    ```powershell
-    python workload.py
-    ```
+    `python workload.py`
 
-    ![](media/image57.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image57.png)
 
-3. In the query window, run the Task 1 query again.
+1. In the query window, run the Task 1 query again.
 
     Record the following three numbers, and compare them with your before numbers:
-
     - Dashboard query `mean_ms`
-
     - Tracking query `mean_ms`
-
     - Workload milliseconds per iteration
 
     All three numbers should drop noticeably, and the CPU chart in Azure Monitor should fall for the same period. This is the full loop of operational monitoring: **detect** (metric), **locate** (pg_stat_statements), **fix** (index) and **verify** (before and after).
 
-    ![](media/image58.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image58.png)
+
 
 ## Exercise 4: Diagnose a blocked session
 
@@ -475,17 +463,16 @@ In this task, you simulate a common application bug: a transaction that updates 
     UPDATE retail.returns SET status = 'review' WHERE return_id = 1;
     ```
 
-    ![](media/image59.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image59.png)
 
-2. In window **B**, try to update the same row:
+1. In window **B**, try to update the same row:
 
-    ```sql
-    UPDATE retail.returns SET refund_amount = refund_amount WHERE return_id = 1;
-    ```
+    `UPDATE retail.returns SET refund_amount = refund_amount WHERE return_id = 1;`
 
     This statement hangs, which is expected. Leave it running.
 
-    ![](media/image60.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image60.png)
+
 
 ### Task 2: Diagnose the blocking session from window C
 
@@ -506,15 +493,15 @@ In this task, you use pg_stat_activity to identify who is waiting and who is cau
       AND cardinality(pg_blocking_pids(pid)) > 0;
     ```
 
-    ![](media/image61.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image61.png)
 
-2. Review the result. It shows the session from window B, a wait event type of **Lock**, and the process ID of the session that is blocking it. Copy the process ID from the `blocked_by` column.
+1. Review the result. It shows the session from window B, a wait event type of `Lock`, and the process ID of the session that is blocking it. Copy the process ID from the `blocked_by` column.
 
-    ![](media/image62.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image62.png)
 
-    ![](media/image63.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image63.png)
 
-3. Inspect the blocker by running the following query. Replace `<blocking-pid>` with the process ID that you copied:
+1. Inspect the blocker by running the following query. Replace `<blocking-pid>` with the process ID that you copied:
 
     ```sql
     SELECT pid, state, xact_start, now() - xact_start AS open_for, left(query, 60) AS last_query
@@ -524,7 +511,8 @@ In this task, you use pg_stat_activity to identify who is waiting and who is cau
 
     Notice that the blocker shows the state **idle in transaction**. It finished its statement but never committed, which is a classic application bug.
 
-    ![](media/image64.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image64.png)
+
 
 ### Task 3: Resolve the blocking session
 
@@ -532,15 +520,14 @@ In this task, you end the blocking session so that the waiting request can compl
 
 1. In window **C**, run the following statement. Replace `<blocking-pid>` with the process ID from Task 2:
 
-    ```sql
-    SELECT pg_terminate_backend(<blocking-pid>);
-    ```
+    `SELECT pg_terminate_backend(<blocking-pid>);`
 
-    ![](media/image65.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image65.png)
 
-2. Switch to window **B** and confirm that the update has now completed.
+1. Switch to window **B** and confirm that the update has now completed.
 
-    ![](media/image66.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image66.png)
+
 
 ## Exercise 5: Cache and bloat maintenance
 
@@ -566,9 +553,10 @@ In this task, you see which tables and indexes occupy shared memory. This helps 
     LIMIT 5;
     ```
 
-2. Review the results. The **order_events** table and its new indexes should dominate, because your workload keeps them hot.
+1. Review the results. The **order_events** table and its new indexes should dominate, because your workload keeps them hot.
 
-    ![](media/image67.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image67.png)
+
 
 ### Task 2: Create bloat and measure it
 
@@ -588,13 +576,14 @@ In this task, you update many rows to leave dead row versions behind, and then m
     WHERE relid = 'retail.order_events'::regclass;
     ```
 
-2. In the output, review the **dead_tuple_percent** and **approx_free_percent** columns.
+1. In the output, review the **dead_tuple_percent** and **approx_free_percent** columns.
 
-    ![](media/image68.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image68.png)
 
-    ![](media/image69.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image69.png)
 
-    **Note:** Autovacuum might already be working, so your numbers can differ from those of other participants.
+    >[!Note] Autovacuum might already be working, so your numbers can differ from those of other participants.
+
 
 ### Task 3: Clean up and re-measure
 
@@ -608,11 +597,12 @@ In this task, you run a manual vacuum and measure the table again. This confirms
     SELECT * FROM pgstattuple_approx('retail.order_events');
     ```
 
-    ![](media/image70.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image70.png)
 
-2. Compare the results with Task 2. Dead tuples drop to near zero. Free space remains inside the table for reuse. Returning that space to the operating system requires a table rewrite, which is what pg_repack is for in production.
+1. Compare the results with Task 2. Dead tuples drop to near zero. Free space remains inside the table for reuse. Returning that space to the operating system requires a table rewrite, which is what pg_repack is for in production.
 
-    ![](media/image71.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%208/media/image71.png)
+
 
 ## Summary
 
