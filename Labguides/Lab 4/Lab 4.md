@@ -30,19 +30,19 @@ After completing this lab, you will be able to:
    Username - +++@lab.CloudPortalCredential(User1).Username+++  
    TAP Token - +++@lab.CloudPortalCredential(User1).AccessToken+++
 
-   ![](./media/image1.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image1.png)
 
-   ![](./media/image2.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image2.png)
 
-   ![](./media/image3.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image3.png)
 
 3. In the search box at the top of the page, enter +++Azure HorizonDB+++. Under Services, select **Azure HorizonDB**.
 
-   ![](./media/image4.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image4.png)
 
 4. Select **Create**.
 
-   ![](./media/image5.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image5.png)
 
 5. Use these values and leave everything else at its default.
 
@@ -58,122 +58,122 @@ After completing this lab, you will be able to:
    | Administrator username | lawadmin                           |
    | Password               | Pass@1234                          |
 
-   ![](./media/image6.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image6.png)
 
-   ![](./media/image7.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image7.png)
 
-   ![](./media/image8.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image8.png)
 
-   ![](./media/image9.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image9.png)
 
 6. On the **Networking** tab, make sure the connectivity method is **Public access**.
 
-   ![](./media/image10.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image10.png)
 
 7. Under firewall rules, enable **Allow public access from any Azure service within Azure to this cluster**.
 
-   ![](./media/image11.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image11.png)
 
 8. Select **Add current client IP address** to add your current public IP address to the firewall rules. Select **Review + create**.
 
-   ![](./media/image12.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image12.png)
 
 9. Select **Create** and wait 10 to 15 minutes to complete the deployment.
 
-   ![](./media/image13.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image13.png)
 
 10. Select **Go to resource group** -> **HorizonDB cluster** and copy the **Cluster endpoint**.
 
-    ![](./media/image14.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image14.png)
 
-    ![](./media/image15.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image15.png)
 
-    ![](./media/image16.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image16.png)
 
 ### Task 2: Prepare your own models (bring your own model)
 
 1. In the Azure portal, open **Microsoft Foundry**.
 
-   ![](./media/image17.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image17.png)
 
 2. From the left navigation expand **All models, agents and tools**->select **Microsoft Foundry**.
 
-   ![](./media/image18.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image18.png)
 
 3. Select **Create**.
 
-   ![](./media/image19.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image19.png)
 
 4. Enter the following details to create a Foundry project:
 
    | Setting              | Suggested value             |
    |----------------------|-----------------------------|
    | Resource Group       | ResourceGroup1              |
-   | Name                 | Foundry @lab.LabInstance.Id |
+   | Name                 | Foundry-@lab.LabInstance.Id |
    | Region               | East US                     |
-   | Default Project Name | project@lab.LabInstance.Id  |
+   | Default Project Name | project-@lab.LabInstance.Id  |
 
    Select **Review+create**.
 
-   ![](./media/image20.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image20.png)
 
-   ![](./media/image21.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image21.png)
 
 5. Select **Create**.
 
-   ![](./media/image22.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image22.png)
 
 6. Select **Go to resource**.
 
-   ![](./media/image23.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image23.png)
 
 7. Select **Go to Foundry portal**.
 
-   ![](./media/image24.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image24.png)
 
 8. In the Use model section select **view deployments**.
 
-   ![](./media/image25.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image25.png)
 
 9. Select **Deploy a base model**.
 
-   ![](./media/image26.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image26.png)
 
-10. Search +++text-embedding+++ in the search bar. Then select **text-embedding-3-small** model.
+10. Search `text-embedding` in the search bar. Then select **text-embedding-3-small** model.
 
-    ![](./media/image27.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image27.png)
 
 11. Select Deploy->Custom settings.
 
-    ![](./media/image28.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image28.png)
 
 12. Increase Tokens per minute rate limit to 3.17M. Now select **Deploy.**
 
-    ![](./media/image29.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image29.png)
 
 13. Save the value of Endpoint and key in the notepad you will use them in the upcoming tasks.
 
-    ![](./media/image30.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image30.png)
 
 14. Now deploy chat model. Select **Deploy a base model.**
 
-    ![](./media/image31.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image31.png)
 
-15. So search for +++gpt-5.1+++ in the search bar and then select gpt-5.1 model from the search result.
+15. So search for `gpt-5.1` in the search bar and then select gpt-5.1 model from the search result.
 
-    ![](./media/image32.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image32.png)
 
 16. Select Deploy ->Custom settings
 
-    ![](./media/image33.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image33.png)
 
 17. Increase Tokens per minute rate limit to **15.29M**. Select **Deploy**
 
-    ![](./media/image34.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image34.png)
 
 18. Save the Endpoint and key values in the notepad we will use them in the upcoming task.
 
-    ![](./media/image35.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image35.png)
 
 ### Task 3: Create and attach the parameter group
 
@@ -183,31 +183,29 @@ Use Azure Cloud Shell (Bash) or any terminal with the Azure CLI installed.
 
 1. Open **Cloud Shell** from the Azure portal toolbar. Select **Bash**.
 
-   ![](./media/image36.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image36.png)
 
 2. Select **No storage account required**, select your subscription, and then select **Apply**. Wait for Azure Cloud Shell to initialize.
 
-   ![](./media/image37.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image37.png)
 
 3. Run the following command to login into azure:
 
-   ```bash
-   +++az login+++
-   ```
+   `az login`
 
-   ![](./media/image38.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image38.png)
 
-   ![](./media/image39.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image39.png)
 
-   ![](./media/image40.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image40.png)
 
-   ![](./media/image41.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image41.png)
 
-   ![](./media/image42.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image42.png)
 
-4. Enter +++1+++ and press enter.
+4. Enter `1` and press enter.
 
-   ![](./media/image43.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image43.png)
 
 5. Set the names you will use in the following commands. Replace the cluster name if yours is different.
 
@@ -217,7 +215,7 @@ Use Azure Cloud Shell (Bash) or any terminal with the Azure CLI installed.
    PG="legalai-pg"
    ```
 
-   ![](./media/image44.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image44.png)
 
 6. Create the parameter group.
 
@@ -232,11 +230,11 @@ Use Azure Cloud Shell (Bash) or any terminal with the Azure CLI installed.
      --description "Lab 4 AGE and vector settings"
    ```
 
-   ![](./media/image45.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image45.png)
 
 7. Enter+++y+++
 
-   ![](./media/image46.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image46.png)
 
 8. Check that the group was created.
 
@@ -244,9 +242,9 @@ Use Azure Cloud Shell (Bash) or any terminal with the Azure CLI installed.
    az horizondb parameter-group show --name $PG --resource-group $RG
    ```
 
-   ![](./media/image47.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image47.png)
 
-   ![](./media/image48.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image48.png)
 
 9. Attach the parameter group to the cluster. The cluster restarts automatically, which can take several minutes.
 
@@ -259,9 +257,9 @@ Use Azure Cloud Shell (Bash) or any terminal with the Azure CLI installed.
      --parameter-group "/subscriptions/$SUB/resourceGroups/$RG/providers/Microsoft.HorizonDb/parameterGroups/$PG"
    ```
 
-   ![](./media/image49.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image49.png)
 
-   ![](./media/image50.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image50.png)
 
 10. Confirm the cluster is connected to the group.
 
@@ -269,11 +267,11 @@ Use Azure Cloud Shell (Bash) or any terminal with the Azure CLI installed.
     az horizondb parameter-group list-connections --name $PG --resource-group $RG
     ```
 
-    ![](./media/image51.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image51.png)
 
     Your cluster name should appear in the output.
 
-    ![](./media/image52.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image52.png)
 
 11. After the restart finishes, connect with psql. Replace `<CLUSTER_ENDPOINT>` with the cluster endpoint from the portal and enter the administrator password when prompted.
 
@@ -281,13 +279,13 @@ Use Azure Cloud Shell (Bash) or any terminal with the Azure CLI installed.
     psql "host=<CLUSTER_ENDPOINT> port=5432 dbname=postgres user=lawadmin sslmode=require"
     ```
 
-    ![](./media/image53.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image53.png)
 
 12. Enter password as +++Pass@1234+++.
 
-    ![](./media/image54.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image54.png)
 
-    ![](./media/image55.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image55.png)
 
 13. Run these queries:
 
@@ -296,11 +294,11 @@ Use Azure Cloud Shell (Bash) or any terminal with the Azure CLI installed.
     SHOW shared_preload_libraries;
     ```
 
-    ![](./media/image56.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image56.png)
 
     **Expected result:** azure.extensions shows age,azure_ai,pg_diskann,vector, and shared_preload_libraries includes age.
 
-    ![](./media/image57.png)
+    ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image57.png)
 
 ### Task 4: Create the lab database and extensions
 
@@ -310,45 +308,45 @@ Use Azure Cloud Shell (Bash) or any terminal with the Azure CLI installed.
    CREATE DATABASE legalai_lab;
    ```
 
-   ![](./media/image58.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image58.png)
 
-2. Enter +++\q+++ to terminate the connection:
+2. Enter `\q` to terminate the connection:
 
-   ![](./media/image59.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image59.png)
 
 3. Open Visual Studio code and navigate to PostgreSQL extension.
 
-   > Note: If the PostgresSQL extension is not available in the VS code go to extensions->search for PostgresSQL->select install.
+   >[!Note] If the PostgresSQL extension is not available in the VS code go to extensions->search for PostgresSQL->select install.
 
-   ![](./media/image60.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image60.png)
 
 4. Select **+Add connection**.
 
-   ![](./media/image61.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image61.png)
 
 5. Enter the following connection details:
 
    | Setting      | Suggested value                                              |
    |--------------|--------------------------------------------------------------|
    | Server name  | Primary endpoint of the cluster which we saved in Exercise 0 |
-   | Username     | lawadmin                                                     |
-   | Password     | Pass@1234                                                    |
+   | Username     | `lawadmin`                                                     |
+   | Password     | `Pass@1234`                                                    |
    | Database     | legalai_lab                                                  |
    | Server Group | Servers                                                      |
 
-   ![](./media/image62.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image62.png)
 
 6. Select **Test connection** to check the connection.
 
-   ![](./media/image63.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image63.png)
 
 7. After running Test connection successfully select **Save & Connect**.
 
-   ![](./media/image64.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image64.png)
 
 8. Select **New Query**.
 
-   ![](./media/image65.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image65.png)
 
 9. Enter the following query to create new extensions and then select Play button to run the query:
 
@@ -364,11 +362,11 @@ Use Azure Cloud Shell (Bash) or any terminal with the Azure CLI installed.
    ORDER BY extname;
    ```
 
-   ![](./media/image66.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image66.png)
 
    **Expected result:** all four extensions are listed.
 
-   ![](./media/image67.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image67.png)
 
 ## Exercise 1: Load the research library and build the citation graph
 
@@ -390,7 +388,7 @@ The application never calls the model functions directly. First, you register yo
    );
    ```
 
-   ![](./media/image68.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image68.png)
 
 2. Similarly Register the chat model
 
@@ -406,7 +404,7 @@ The application never calls the model functions directly. First, you register yo
    );
    ```
 
-   ![](./media/image69.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image69.png)
 
 3. Run the following query to verify model registration
 
@@ -417,7 +415,7 @@ The application never calls the model functions directly. First, you register yo
 
    Expected result: Both my-embedding and my-chat appear in the model registry, with their corresponding deployment names and model information.
 
-   ![](./media/image70.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image70.png)
 
 4. Create the legal schema and the two wrapper functions. These functions provide a consistent interface for the application, regardless of which registered models are used.
 
@@ -449,7 +447,7 @@ The application never calls the model functions directly. First, you register yo
    $$;
    ```
 
-   ![](./media/image71.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image71.png)
 
 5. Run the following queries to test both functions.
 
@@ -459,7 +457,7 @@ The application never calls the model functions directly. First, you register yo
    SELECT vector_dims(legal.embed('test'));
    ```
 
-   ![](./media/image72.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image72.png)
 
    **Query 2:**
 
@@ -470,7 +468,7 @@ The application never calls the model functions directly. First, you register yo
    );
    ```
 
-   ![](./media/image73.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image73.png)
 
 ### Task 2: Create and load the document table
 
@@ -504,7 +502,7 @@ INSERT INTO legal.documents (doc_id, title, doc_type, decision_year, classificat
 
 **Expected result:** 12 rows inserted.
 
-![](./media/image74.png)
+![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image74.png)
 
 ### Task 3: Generate embeddings
 
@@ -522,7 +520,7 @@ WHERE embedding IS NULL;
 
 **Expected result:** 12 and 12. If the counts differ, check Task 1 and your model registration before you continue.
 
-![](./media/image75.png)
+![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image75.png)
 
 ### Task 4: Build the citation graph
 
@@ -562,7 +560,7 @@ SET search_path = ag_catalog, "$user", public;
 $$) AS (result agtype);
 ```
 
-![](./media/image76.png)
+![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image76.png)
 
 Verify the graph:
 
@@ -574,13 +572,13 @@ SELECT * FROM cypher('legal_graph', $$ MATCH ()-[r]->() RETURN count(r) $$) AS (
 
 **Expected result:** 12 vertices and 20 edges.
 
-![](./media/image77.png)
+![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image77.png)
 
-![](./media/image78.png)
+![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image78.png)
 
-> **Note:** Every cypher() call needs an AS (...) clause with one agtype column for each returned value. If a statement fails with a cypher function error, check that age is preloaded (Exercise 0, Task 2).
->
-> **Checkpoint:** You have 12 embedded documents and a graph that records which document cites which.
+>[!Note] Every cypher() call needs an AS (...) clause with one agtype column for each returned value. If a statement fails with a cypher function error, check that age is preloaded (Exercise 0, Task 2).
+
+**Checkpoint:** You have 12 embedded documents and a graph that records which document cites which.
 
 ## Exercise 2: Retrieve with vectors, then expand with the graph
 
@@ -596,7 +594,7 @@ LIMIT 3;
 
 **Expected result:** CASE-002 (Brightwater Logistics v. Harlan) is first or near the top. The case it builds on, CASE-001, and the later cases that apply it may rank lower or not appear, even though a complete answer needs them. This is the gap the graph fills.
 
-![](./media/image79.png)
+![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image79.png)
 
 ### Task 2: Create the graph lookup functions
 
@@ -629,7 +627,7 @@ END;
 $fn$;
 ```
 
-![](./media/image80.png)
+![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image80.png)
 
 The second function adds titles from the relational table. It lists the documents that the starting document cites first (the authority it rests on), then the documents that cite it:
 
@@ -646,7 +644,7 @@ AS $$
 $$;
 ```
 
-![](./media/image81.png)
+![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image81.png)
 
 ### Task 3: Test the graph expansion
 
@@ -656,7 +654,7 @@ SELECT * FROM legal.related_docs('CASE-002', 4);
 
 **Expected result:** CASE-001 (cites), then CASE-004, CASE-005 and MEMO-002 (cited_by). A fifth neighbor, NOTE-001, is cut by the limit of 4. Brightwater rests on Alder and was applied by later cases and memos, and the graph shows that in one query.
 
-![](./media/image82.png)
+![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image82.png)
 
     `SELECT * FROM legal.related_docs('CASE-002', 4);`
 
@@ -686,7 +684,7 @@ $$;
 
 **Expected result:** CASE-002 found by vector, then CASE-001, CASE-004 and CASE-005 found by graph. The text of the case, the authority it rests on, and the cases that applied it are now available as evidence.
 
-![](./media/image83.png)
+![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image83.png)
 
 > **Checkpoint:** You have a SQL-only GraphRAG retrieval flow. Next, an agent chooses these steps for itself.
 
@@ -720,7 +718,7 @@ CREATE INDEX ix_agent_messages_session ON legal.agent_messages (session_id, mess
 
 User questions, agent answers and every tool result are stored. This gives you a conversation memory and an audit trail.
 
-![](./media/image84.png)
+![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image84.png)
 
 ### Task 2: Open agent.py
 
@@ -728,7 +726,7 @@ User questions, agent answers and every tool result are stored. This gives you a
 
 2. Select 3-dots(…) from the top left navigation bar and then select Terminal->New terminal.
 
-   ![](./media/image85.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image85.png)
 
 3. Execute the following commands one by one in the terminal:
 
@@ -740,7 +738,7 @@ User questions, agent answers and every tool result are stored. This gives you a
    python -m pip install "psycopg[binary]"
    ```
 
-   ![](./media/image86.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image86.png)
 
 4. Then set the connection details. Replace the placeholders with your values which we save in Exercise 0.
 
@@ -749,7 +747,7 @@ User questions, agent answers and every tool result are stored. This gives you a
    $env:AGENT_SESSION_ID = 'lab4-demo'
    ```
 
-   ![](./media/image87.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image87.png)
 
 ### Task 3: Explore how the Legal Research Agent works
 
@@ -768,7 +766,7 @@ The supplied agent.py file contains the complete implementation of the Legal Res
 
    The agent reads its HorizonDB connection details, assigns a session ID to each conversation, and limits the number of tool-execution steps. The TOOL_CATALOG defines the four tools available to the agent: search_documents, find_related_documents, get_document, and recall_memory.
 
-   ![](./media/image88.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image88.png)
 
 2. The following code enables GraphRAG-based legal document retrieval.
 
@@ -791,7 +789,7 @@ The supplied agent.py file contains the complete implementation of the Legal Res
 
    The agent also uses legal.related_docs() to follow citation relationships between documents and tool_get_document() to retrieve their complete content. Together, these capabilities combine vector search and graph-based retrieval to provide relevant legal context.
 
-   ![](./media/image89.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image89.png)
 
 3. The following code defines how the agent interacts with the model.
 
@@ -814,7 +812,7 @@ The supplied agent.py file contains the complete implementation of the Legal Res
 
    The system prompt provides the model with instructions about its role, available tools, and response requirements. The model receives the user's request and determines whether to call a tool or return a final answer. The agent parses the model's JSON response and executes the requested action.
 
-   ![](./media/image90.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image90.png)
 
 4. The following code connects the tools and manages their execution.
 
@@ -829,7 +827,7 @@ The supplied agent.py file contains the complete implementation of the Legal Res
 
    This mapping connects each tool name to its corresponding Python function. When the model requests a tool, the agent uses this mapping to execute the appropriate function, retrieve the result, and send it back to the model.
 
-   ![](./media/image91.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image91.png)
 
 5. The following code stores conversation history for persistent memory.
 
@@ -848,7 +846,7 @@ The supplied agent.py file contains the complete implementation of the Legal Res
 
    This function stores user and assistant messages in the legal.agent_messages table, associated with the current session ID. The recall_memory tool retrieves recent messages from this table, allowing the agent to use previous conversation context even after it is restarted with the same session ID.
 
-   ![](./media/image92.png)
+   ![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image92.png)
 
 ### Task 4: Test the agent
 
@@ -864,21 +862,21 @@ Run +++python agent.py+++ and ask these questions one at a time. Watch the [step
 
 Note: The wording of answers varies between runs, and it also depends on the chat model you deployed. Judge the tools used, the documents retrieved and the citations, not the exact sentences. If the model replies with text that is not JSON, the program asks it to try again, up to five steps.
 
-![](./media/image93.png)
+![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image93.png)
 
-![](./media/image94.png)
+![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image94.png)
 
-![](./media/image95.png)
+![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image95.png)
 
-![](./media/image96.png)
+![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image96.png)
 
-![](./media/image97.png)
+![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image97.png)
 
-![](./media/image98.png)
+![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image98.png)
 
-![](./media/image99.png)
+![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image99.png)
 
-![](./media/image100.png)
+![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image100.png)
 
 **Note:** Your agent may quote matter notes (NOTE-) in its answers, because you are connected as the administrator.
 
@@ -903,7 +901,7 @@ ORDER BY message_id;
 
 Each record is associated with the same session ID, allowing the agent to retrieve previous interactions.
 
-![](./media/image101.png)
+![](https://raw.githubusercontent.com/technofocus-pte/azhorizondbdepth/refs/heads/main/Labguides/Lab%204/media/image101.png)
 
 Checkpoint: You have a working GraphRAG agent whose tools, memory and audit trail all live in HorizonDB.
 
